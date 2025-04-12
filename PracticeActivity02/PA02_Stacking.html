@@ -3097,6 +3097,7 @@ vertical-align: -.125em;
   <ul class="collapse">
   <li><a href="#splitting-and-preprocessing" id="toc-splitting-and-preprocessing" class="nav-link" data-scroll-target="#splitting-and-preprocessing">Splitting and Preprocessing</a></li>
   <li><a href="#base-models-and-final-estimators" id="toc-base-models-and-final-estimators" class="nav-link" data-scroll-target="#base-models-and-final-estimators">Base Models and Final Estimators</a></li>
+  <li><a href="#grid-search-on-combos" id="toc-grid-search-on-combos" class="nav-link" data-scroll-target="#grid-search-on-combos">Grid Search on Combos</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -3391,6 +3392,9 @@ vertical-align: -.125em;
 </section>
 <section id="base-models-and-final-estimators" class="level3">
 <h3 class="anchored" data-anchor-id="base-models-and-final-estimators">Base Models and Final Estimators</h3>
+<p>Some Inspiration:</p>
+<p>https://machinelearningmastery.com/xgboost-for-regression/</p>
+<p>https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesRegressor.html</p>
 <div id="b6340bb46bf60459" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-12T01:28:15.460525Z&quot;,&quot;start_time&quot;:&quot;2025-04-12T01:28:15.456525Z&quot;}" data-execution_count="17">
 <details class="code-fold">
 <summary>Code</summary>
@@ -3415,59 +3419,56 @@ vertical-align: -.125em;
 <span id="cb5-19"><a href="#cb5-19"></a>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="da7d08cea5b0cda2" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-12T01:28:15.534383Z&quot;,&quot;start_time&quot;:&quot;2025-04-12T01:28:15.531554Z&quot;}" data-execution_count="18">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">### Grid Search on Combos</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
+</section>
+<section id="grid-search-on-combos" class="level3">
+<h3 class="anchored" data-anchor-id="grid-search-on-combos">Grid Search on Combos</h3>
 <div id="696169983e073f45" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-12T01:30:23.357255Z&quot;,&quot;start_time&quot;:&quot;2025-04-12T01:28:15.587786Z&quot;}" data-execution_count="19">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a>results <span class="op">=</span> []</span>
-<span id="cb7-2"><a href="#cb7-2"></a></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="co"># Loop through each base model set and final estimator combo</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="cf">for</span> idx, base_models <span class="kw">in</span> <span class="bu">enumerate</span>([base_models_1, base_models_2], start<span class="op">=</span><span class="dv">1</span>):</span>
-<span id="cb7-5"><a href="#cb7-5"></a>    <span class="cf">for</span> final_name, final_est, final_params <span class="kw">in</span> final_estimators:</span>
-<span id="cb7-6"><a href="#cb7-6"></a>        <span class="co"># Define stacking regressor</span></span>
-<span id="cb7-7"><a href="#cb7-7"></a>        stack <span class="op">=</span> StackingRegressor(</span>
-<span id="cb7-8"><a href="#cb7-8"></a>            estimators<span class="op">=</span>base_models,</span>
-<span id="cb7-9"><a href="#cb7-9"></a>            final_estimator<span class="op">=</span>final_est,</span>
-<span id="cb7-10"><a href="#cb7-10"></a>            passthrough<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb7-11"><a href="#cb7-11"></a>            n_jobs<span class="op">=-</span><span class="dv">1</span></span>
-<span id="cb7-12"><a href="#cb7-12"></a>        )</span>
-<span id="cb7-13"><a href="#cb7-13"></a></span>
-<span id="cb7-14"><a href="#cb7-14"></a>        <span class="co"># Wrap in pipeline</span></span>
-<span id="cb7-15"><a href="#cb7-15"></a>        pipe <span class="op">=</span> Pipeline(steps<span class="op">=</span>[</span>
-<span id="cb7-16"><a href="#cb7-16"></a>            (<span class="st">&#39;preprocessor&#39;</span>, preprocessor),</span>
-<span id="cb7-17"><a href="#cb7-17"></a>            (<span class="st">&#39;regressor&#39;</span>, stack)</span>
-<span id="cb7-18"><a href="#cb7-18"></a>        ])</span>
-<span id="cb7-19"><a href="#cb7-19"></a></span>
-<span id="cb7-20"><a href="#cb7-20"></a>        <span class="co"># Grid search</span></span>
-<span id="cb7-21"><a href="#cb7-21"></a>        grid_search <span class="op">=</span> GridSearchCV(pipe, final_params, cv<span class="op">=</span><span class="dv">5</span>, scoring<span class="op">=</span><span class="st">&#39;neg_mean_squared_error&#39;</span>, n_jobs<span class="op">=-</span><span class="dv">1</span>)</span>
-<span id="cb7-22"><a href="#cb7-22"></a>        grid_search.fit(X_train, y_train)</span>
-<span id="cb7-23"><a href="#cb7-23"></a></span>
-<span id="cb7-24"><a href="#cb7-24"></a>        <span class="co"># Evaluate best model</span></span>
-<span id="cb7-25"><a href="#cb7-25"></a>        best_model <span class="op">=</span> grid_search.best_estimator_</span>
-<span id="cb7-26"><a href="#cb7-26"></a>        y_pred <span class="op">=</span> best_model.predict(X_test)</span>
-<span id="cb7-27"><a href="#cb7-27"></a>        mse <span class="op">=</span> mean_squared_error(y_test, y_pred)</span>
-<span id="cb7-28"><a href="#cb7-28"></a>        r2 <span class="op">=</span> r2_score(y_test, y_pred)</span>
-<span id="cb7-29"><a href="#cb7-29"></a></span>
-<span id="cb7-30"><a href="#cb7-30"></a>        <span class="co"># Store results</span></span>
-<span id="cb7-31"><a href="#cb7-31"></a>        results.append({</span>
-<span id="cb7-32"><a href="#cb7-32"></a>            <span class="st">&#39;Base Model Set&#39;</span>: <span class="ss">f&#39;Set </span><span class="sc">{</span>idx<span class="sc">}</span><span class="ss">&#39;</span>,</span>
-<span id="cb7-33"><a href="#cb7-33"></a>            <span class="st">&#39;Final Estimator&#39;</span>: final_name,</span>
-<span id="cb7-34"><a href="#cb7-34"></a>            <span class="st">&#39;Best Params&#39;</span>: grid_search.best_params_,</span>
-<span id="cb7-35"><a href="#cb7-35"></a>            <span class="st">&#39;Test MSE&#39;</span>: <span class="bu">round</span>(mse, <span class="dv">3</span>),</span>
-<span id="cb7-36"><a href="#cb7-36"></a>            <span class="st">&#39;Test R²&#39;</span>: <span class="bu">round</span>(r2, <span class="dv">3</span>)</span>
-<span id="cb7-37"><a href="#cb7-37"></a>        })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a>results <span class="op">=</span> []</span>
+<span id="cb6-2"><a href="#cb6-2"></a></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="co"># Loop through each base model set and final estimator combo</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="cf">for</span> idx, base_models <span class="kw">in</span> <span class="bu">enumerate</span>([base_models_1, base_models_2], start<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb6-5"><a href="#cb6-5"></a>    <span class="cf">for</span> final_name, final_est, final_params <span class="kw">in</span> final_estimators:</span>
+<span id="cb6-6"><a href="#cb6-6"></a>        <span class="co"># Define stacking regressor</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a>        stack <span class="op">=</span> StackingRegressor(</span>
+<span id="cb6-8"><a href="#cb6-8"></a>            estimators<span class="op">=</span>base_models,</span>
+<span id="cb6-9"><a href="#cb6-9"></a>            final_estimator<span class="op">=</span>final_est,</span>
+<span id="cb6-10"><a href="#cb6-10"></a>            passthrough<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb6-11"><a href="#cb6-11"></a>            n_jobs<span class="op">=-</span><span class="dv">1</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a>        )</span>
+<span id="cb6-13"><a href="#cb6-13"></a></span>
+<span id="cb6-14"><a href="#cb6-14"></a>        <span class="co"># Wrap in pipeline</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a>        pipe <span class="op">=</span> Pipeline(steps<span class="op">=</span>[</span>
+<span id="cb6-16"><a href="#cb6-16"></a>            (<span class="st">&#39;preprocessor&#39;</span>, preprocessor),</span>
+<span id="cb6-17"><a href="#cb6-17"></a>            (<span class="st">&#39;regressor&#39;</span>, stack)</span>
+<span id="cb6-18"><a href="#cb6-18"></a>        ])</span>
+<span id="cb6-19"><a href="#cb6-19"></a></span>
+<span id="cb6-20"><a href="#cb6-20"></a>        <span class="co"># Grid search</span></span>
+<span id="cb6-21"><a href="#cb6-21"></a>        grid_search <span class="op">=</span> GridSearchCV(pipe, final_params, cv<span class="op">=</span><span class="dv">5</span>, scoring<span class="op">=</span><span class="st">&#39;neg_mean_squared_error&#39;</span>, n_jobs<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb6-22"><a href="#cb6-22"></a>        grid_search.fit(X_train, y_train)</span>
+<span id="cb6-23"><a href="#cb6-23"></a></span>
+<span id="cb6-24"><a href="#cb6-24"></a>        <span class="co"># Evaluate best model</span></span>
+<span id="cb6-25"><a href="#cb6-25"></a>        best_model <span class="op">=</span> grid_search.best_estimator_</span>
+<span id="cb6-26"><a href="#cb6-26"></a>        y_pred <span class="op">=</span> best_model.predict(X_test)</span>
+<span id="cb6-27"><a href="#cb6-27"></a>        mse <span class="op">=</span> mean_squared_error(y_test, y_pred)</span>
+<span id="cb6-28"><a href="#cb6-28"></a>        r2 <span class="op">=</span> r2_score(y_test, y_pred)</span>
+<span id="cb6-29"><a href="#cb6-29"></a></span>
+<span id="cb6-30"><a href="#cb6-30"></a>        <span class="co"># Store results</span></span>
+<span id="cb6-31"><a href="#cb6-31"></a>        results.append({</span>
+<span id="cb6-32"><a href="#cb6-32"></a>            <span class="st">&#39;Base Model Set&#39;</span>: <span class="ss">f&#39;Set </span><span class="sc">{</span>idx<span class="sc">}</span><span class="ss">&#39;</span>,</span>
+<span id="cb6-33"><a href="#cb6-33"></a>            <span class="st">&#39;Final Estimator&#39;</span>: final_name,</span>
+<span id="cb6-34"><a href="#cb6-34"></a>            <span class="st">&#39;Best Params&#39;</span>: grid_search.best_params_,</span>
+<span id="cb6-35"><a href="#cb6-35"></a>            <span class="st">&#39;Test MSE&#39;</span>: <span class="bu">round</span>(mse, <span class="dv">3</span>),</span>
+<span id="cb6-36"><a href="#cb6-36"></a>            <span class="st">&#39;Test R²&#39;</span>: <span class="bu">round</span>(r2, <span class="dv">3</span>)</span>
+<span id="cb6-37"><a href="#cb6-37"></a>        })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div id="7cb65dd591f54dc" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-12T01:30:23.425176Z&quot;,&quot;start_time&quot;:&quot;2025-04-12T01:30:23.419169Z&quot;}" data-execution_count="20">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># Results!</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a>pd.DataFrame(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># Results!</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>pd.DataFrame(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="20">
 <div>
