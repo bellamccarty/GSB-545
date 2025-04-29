@@ -3098,6 +3098,22 @@ vertical-align: -.125em;
   <li><a href="#class-distribution-of-our-target" id="toc-class-distribution-of-our-target" class="nav-link" data-scroll-target="#class-distribution-of-our-target">Class Distribution of Our Target</a></li>
   <li><a href="#exploratory-plots" id="toc-exploratory-plots" class="nav-link" data-scroll-target="#exploratory-plots">Exploratory Plots</a></li>
   </ul></li>
+  <li><a href="#feature-selection-and-preprocessing" id="toc-feature-selection-and-preprocessing" class="nav-link" data-scroll-target="#feature-selection-and-preprocessing">Feature Selection and Preprocessing</a>
+  <ul class="collapse">
+  <li><a href="#preprocessing-pipeline" id="toc-preprocessing-pipeline" class="nav-link" data-scroll-target="#preprocessing-pipeline">Preprocessing Pipeline</a></li>
+  </ul></li>
+  <li><a href="#preliminary-modeling" id="toc-preliminary-modeling" class="nav-link" data-scroll-target="#preliminary-modeling">Preliminary Modeling</a>
+  <ul class="collapse">
+  <li><a href="#bagging-classifier" id="toc-bagging-classifier" class="nav-link" data-scroll-target="#bagging-classifier">Bagging Classifier</a></li>
+  <li><a href="#random-forest-classifier" id="toc-random-forest-classifier" class="nav-link" data-scroll-target="#random-forest-classifier">Random Forest Classifier</a></li>
+  <li><a href="#key-observations" id="toc-key-observations" class="nav-link" data-scroll-target="#key-observations">Key Observations:</a></li>
+  </ul></li>
+  <li><a href="#naive-bayes-and-neural-networks" id="toc-naive-bayes-and-neural-networks" class="nav-link" data-scroll-target="#naive-bayes-and-neural-networks">Naive Bayes and Neural Networks</a>
+  <ul class="collapse">
+  <li><a href="#naive-bayes-classifier" id="toc-naive-bayes-classifier" class="nav-link" data-scroll-target="#naive-bayes-classifier">Naive Bayes Classifier</a></li>
+  <li><a href="#neural-network-classifier" id="toc-neural-network-classifier" class="nav-link" data-scroll-target="#neural-network-classifier">Neural Network Classifier</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
 </div>
@@ -3183,7 +3199,7 @@ vertical-align: -.125em;
 </section>
 <section id="dataset-preview" class="level2">
 <h2 class="anchored" data-anchor-id="dataset-preview">Dataset Preview</h2>
-<div id="c91bc971f526de0a" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T01:11:30.491892Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T01:11:30.487893Z&quot;}" data-execution_count="42">
+<div id="c91bc971f526de0a" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:55:27.928492Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:55:27.925051Z&quot;}" data-execution_count="213">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># Basic imports</span></span>
@@ -3193,7 +3209,7 @@ vertical-align: -.125em;
 <span id="cb1-5"><a href="#cb1-5"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb1-6"><a href="#cb1-6"></a></span>
 <span id="cb1-7"><a href="#cb1-7"></a><span class="co"># Modeling imports</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split, GridSearchCV, StratifiedKFold</span>
 <span id="cb1-9"><a href="#cb1-9"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder, StandardScaler</span>
 <span id="cb1-10"><a href="#cb1-10"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
 <span id="cb1-11"><a href="#cb1-11"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline</span>
@@ -3203,16 +3219,16 @@ vertical-align: -.125em;
 <span id="cb1-15"><a href="#cb1-15"></a><span class="im">from</span> sklearn.naive_bayes <span class="im">import</span> GaussianNB</span>
 <span id="cb1-16"><a href="#cb1-16"></a><span class="im">from</span> sklearn.neural_network <span class="im">import</span> MLPClassifier</span>
 <span id="cb1-17"><a href="#cb1-17"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
-<span id="cb1-18"><a href="#cb1-18"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-18"><a href="#cb1-18"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier, BaggingClassifier, AdaBoostClassifier</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="d875aa06c947a82d" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T01:11:30.550761Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T01:11:30.500276Z&quot;}" data-execution_count="43">
+<div id="d875aa06c947a82d" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:55:27.998496Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:55:27.958499Z&quot;}" data-execution_count="214">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">&#39;Data/income_evaluation.csv&#39;</span>)</span>
 <span id="cb2-2"><a href="#cb2-2"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="43">
+<div class="cell-output cell-output-display" data-execution_count="214">
 <div>
 
 
@@ -3336,7 +3352,7 @@ vertical-align: -.125em;
 </div>
 <section id="dataset-information" class="level3">
 <h3 class="anchored" data-anchor-id="dataset-information">Dataset Information</h3>
-<div id="b115f04e742cb02b" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T01:11:30.593023Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T01:11:30.580649Z&quot;}" data-execution_count="44">
+<div id="b115f04e742cb02b" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:55:28.126014Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:55:28.114241Z&quot;}" data-execution_count="215">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a>df.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -3366,12 +3382,12 @@ dtypes: int64(6), object(9)
 memory usage: 3.7+ MB</code></pre>
 </div>
 </div>
-<div id="6428cf58290cf7cc" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T01:11:30.619564Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T01:11:30.616112Z&quot;}" data-execution_count="45">
+<div id="6428cf58290cf7cc" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:55:28.245848Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:55:28.241585Z&quot;}" data-execution_count="216">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a>df.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="45">
+<div class="cell-output cell-output-display" data-execution_count="216">
 <pre><code>Index([&#39;age&#39;, &#39; workclass&#39;, &#39; fnlwgt&#39;, &#39; education&#39;, &#39; education-num&#39;,
        &#39; marital-status&#39;, &#39; occupation&#39;, &#39; relationship&#39;, &#39; race&#39;, &#39; sex&#39;,
        &#39; capital-gain&#39;, &#39; capital-loss&#39;, &#39; hours-per-week&#39;, &#39; native-country&#39;,
@@ -3379,21 +3395,45 @@ memory usage: 3.7+ MB</code></pre>
       dtype=&#39;object&#39;)</code></pre>
 </div>
 </div>
-<div id="4fd2d59c35a722e" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T01:11:30.700372Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T01:11:30.696987Z&quot;}" data-execution_count="46">
+<div id="5551c414eec50bae" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:55:28.326074Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:55:28.321892Z&quot;}" data-execution_count="217">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">def</span> remove_spaces_from_columns(df):</span>
-<span id="cb7-2"><a href="#cb7-2"></a>    df.columns <span class="op">=</span> df.columns.<span class="bu">str</span>.replace(<span class="st">&#39; &#39;</span>, <span class="st">&#39;&#39;</span>, regex<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb7-3"><a href="#cb7-3"></a>    <span class="cf">return</span> df</span>
-<span id="cb7-4"><a href="#cb7-4"></a>df <span class="op">=</span> remove_spaces_from_columns(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a>df.dtypes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="217">
+<pre><code>age                 int64
+ workclass         object
+ fnlwgt             int64
+ education         object
+ education-num      int64
+ marital-status    object
+ occupation        object
+ relationship      object
+ race              object
+ sex               object
+ capital-gain       int64
+ capital-loss       int64
+ hours-per-week     int64
+ native-country    object
+ income            object
+dtype: object</code></pre>
+</div>
+</div>
+<div id="4fd2d59c35a722e" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:55:28.452016Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:55:28.447793Z&quot;}" data-execution_count="218">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">def</span> remove_spaces_from_columns(df):</span>
+<span id="cb9-2"><a href="#cb9-2"></a>    df.columns <span class="op">=</span> df.columns.<span class="bu">str</span>.replace(<span class="st">&#39; &#39;</span>, <span class="st">&#39;&#39;</span>, regex<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb9-3"><a href="#cb9-3"></a>    <span class="cf">return</span> df</span>
+<span id="cb9-4"><a href="#cb9-4"></a>df <span class="op">=</span> remove_spaces_from_columns(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="e09d10a2632ead2e" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T01:11:30.742503Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T01:11:30.738445Z&quot;}" data-execution_count="47">
+<div id="e09d10a2632ead2e" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:55:28.487698Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:55:28.482378Z&quot;}" data-execution_count="219">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a>df.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a>df.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="47">
+<div class="cell-output cell-output-display" data-execution_count="219">
 <pre><code>Index([&#39;age&#39;, &#39;workclass&#39;, &#39;fnlwgt&#39;, &#39;education&#39;, &#39;education-num&#39;,
        &#39;marital-status&#39;, &#39;occupation&#39;, &#39;relationship&#39;, &#39;race&#39;, &#39;sex&#39;,
        &#39;capital-gain&#39;, &#39;capital-loss&#39;, &#39;hours-per-week&#39;, &#39;native-country&#39;,
@@ -3405,12 +3445,12 @@ memory usage: 3.7+ MB</code></pre>
 <section id="class-distribution-of-our-target" class="level3">
 <h3 class="anchored" data-anchor-id="class-distribution-of-our-target">Class Distribution of Our Target</h3>
 <p>Do we have a majority class?</p>
-<div id="4af4e5f1c4844ff9" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T01:11:30.774025Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T01:11:30.769030Z&quot;}" data-execution_count="48">
+<div id="4af4e5f1c4844ff9" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:55:28.602377Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:55:28.595275Z&quot;}" data-execution_count="220">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a>df[<span class="st">&quot;income&quot;</span>].value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a>df[<span class="st">&quot;income&quot;</span>].value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="48">
+<div class="cell-output cell-output-display" data-execution_count="220">
 <pre><code>income
 &lt;=50K    24720
 &gt;50K      7841
@@ -3421,19 +3461,19 @@ Name: count, dtype: int64</code></pre>
 <section id="exploratory-plots" class="level3">
 <h3 class="anchored" data-anchor-id="exploratory-plots">Exploratory Plots</h3>
 <p>Below are visuals exploring variables we can typically associate with income levels.</p>
-<div id="5c3cf1272df1fc2f" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T01:11:31.416628Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T01:11:30.800979Z&quot;}" data-execution_count="49">
+<div id="5c3cf1272df1fc2f" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:55:29.061047Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:55:28.722873Z&quot;}" data-execution_count="221">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a><span class="co"># Age distribution</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a>sns.histplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">&quot;age&quot;</span>, hue<span class="op">=</span><span class="st">&#39;income&#39;</span>, multiple<span class="op">=</span><span class="st">&quot;stack&quot;</span>)</span>
-<span id="cb12-3"><a href="#cb12-3"></a>plt.title(<span class="st">&#39;Age Distribution by Income Group&#39;</span>)</span>
-<span id="cb12-4"><a href="#cb12-4"></a>plt.show()</span>
-<span id="cb12-5"><a href="#cb12-5"></a></span>
-<span id="cb12-6"><a href="#cb12-6"></a><span class="co"># Categorical feature counts</span></span>
-<span id="cb12-7"><a href="#cb12-7"></a>sns.countplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">&quot;education&quot;</span>, hue<span class="op">=</span><span class="st">&quot;income&quot;</span>)</span>
-<span id="cb12-8"><a href="#cb12-8"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">90</span>)</span>
-<span id="cb12-9"><a href="#cb12-9"></a>plt.title(<span class="st">&#39;Education Level by Income Group&#39;</span>)</span>
-<span id="cb12-10"><a href="#cb12-10"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1"></a><span class="co"># Age distribution</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a>sns.histplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">&quot;age&quot;</span>, hue<span class="op">=</span><span class="st">&#39;income&#39;</span>, multiple<span class="op">=</span><span class="st">&quot;stack&quot;</span>)</span>
+<span id="cb14-3"><a href="#cb14-3"></a>plt.title(<span class="st">&#39;Age Distribution by Income Group&#39;</span>)</span>
+<span id="cb14-4"><a href="#cb14-4"></a>plt.show()</span>
+<span id="cb14-5"><a href="#cb14-5"></a></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="co"># Categorical feature counts</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a>sns.countplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">&quot;education&quot;</span>, hue<span class="op">=</span><span class="st">&quot;income&quot;</span>)</span>
+<span id="cb14-8"><a href="#cb14-8"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">90</span>)</span>
+<span id="cb14-9"><a href="#cb14-9"></a>plt.title(<span class="st">&#39;Education Level by Income Group&#39;</span>)</span>
+<span id="cb14-10"><a href="#cb14-10"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -3459,20 +3499,1670 @@ Name: count, dtype: int64</code></pre>
 <li>After about age 60, both groups decline significantly, likely due to retirement.</li>
 <li>Overall, income tends to increase with age up to a certain point, but the number of high earners still remains lower compared to those earning under $50K.</li>
 </ul>
-<p>This suggests that <strong>age is a useful predictor for income</strong>, but not the only factor — many older individuals still earn under $50K.</p>
+<p>This suggests that age may be a useful predictor for income, but not the only factor; many older individuals still earn under $50K.</p>
 </section>
 <section id="education-level-by-income-group" class="level4">
 <h4 class="anchored" data-anchor-id="education-level-by-income-group">Education Level by Income Group</h4>
 <p>This plot shows how different education levels are associated with income levels.</p>
 <ul>
-<li>Individuals with only a <strong>high school diploma (HS-grad)</strong> or <strong>some college education</strong> are far more likely to earn less than $50K.</li>
-<li>Higher education levels such as <strong>Bachelors</strong>, <strong>Masters</strong>, and <strong>Doctorates</strong> are associated with a <strong>greater proportion of higher income (&gt; $50K)</strong>.</li>
+<li>Individuals with only a high school diploma (HS-grad) or some college education are far more likely to earn less than $50K.</li>
+<li>Higher education levels such as <strong>Bachelors</strong>, <strong>Masters</strong>, and <strong>Doctorates</strong> are associated with a greater proportion of higher income (&gt; $50K).</li>
 <li>However, even at the Bachelors level, many individuals still earn less than $50K, indicating that education alone doesn’t guarantee a high salary.</li>
 <li>Very low education levels (e.g., 5th-6th grade, 10th grade) are strongly associated with lower income.</li>
 </ul>
-<p>This suggests that <strong>higher education increases the likelihood of earning more</strong>, but it’s not the only factor — experience, job sector, and other variables may also play important roles, which is to be explored in modeling.</p>
+<p>This suggests that higher education increases the likelihood of earning more, but it’s not the only factor; experience, job sector, and other variables may also play important roles, which is to be explored in modeling.</p>
 </section>
 </section>
+</section>
+<section id="feature-selection-and-preprocessing" class="level2">
+<h2 class="anchored" data-anchor-id="feature-selection-and-preprocessing">Feature Selection and Preprocessing</h2>
+<p>In this section, we prepare our features (<code>X</code>) and target (<code>y</code>), identify categorical and numerical variables, and create a preprocessing pipeline to handle them appropriately.</p>
+<p>Since the dataset includes both numerical and categorical data, we use a <code>ColumnTransformer</code> to:</p>
+<ul>
+<li><strong>One-hot encode</strong> the categorical features,</li>
+<li><strong>Standard scale</strong> the numerical features.</li>
+</ul>
+<div id="e6b57cf15893ba8e" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:55:29.091539Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:55:29.083497Z&quot;}" data-execution_count="222">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1"></a><span class="co"># Define X and y</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a>X <span class="op">=</span> df.drop(<span class="st">&quot;income&quot;</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb15-3"><a href="#cb15-3"></a>y <span class="op">=</span> df[<span class="st">&quot;income&quot;</span>]</span>
+<span id="cb15-4"><a href="#cb15-4"></a></span>
+<span id="cb15-5"><a href="#cb15-5"></a><span class="co"># Identify categorical and numerical columns</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a>categorical_cols <span class="op">=</span> X.select_dtypes(include<span class="op">=</span>[<span class="st">&quot;object&quot;</span>]).columns.tolist()</span>
+<span id="cb15-7"><a href="#cb15-7"></a>numerical_cols <span class="op">=</span> X.select_dtypes(include<span class="op">=</span>[<span class="st">&quot;int64&quot;</span>, <span class="st">&quot;float64&quot;</span>]).columns.tolist()</span>
+<span id="cb15-8"><a href="#cb15-8"></a></span>
+<span id="cb15-9"><a href="#cb15-9"></a><span class="bu">print</span>(<span class="st">&quot;Categorical Columns:&quot;</span>, categorical_cols)</span>
+<span id="cb15-10"><a href="#cb15-10"></a><span class="bu">print</span>(<span class="st">&quot;Numerical Columns:&quot;</span>, numerical_cols)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Categorical Columns: [&#39;workclass&#39;, &#39;education&#39;, &#39;marital-status&#39;, &#39;occupation&#39;, &#39;relationship&#39;, &#39;race&#39;, &#39;sex&#39;, &#39;native-country&#39;]
+Numerical Columns: [&#39;age&#39;, &#39;fnlwgt&#39;, &#39;education-num&#39;, &#39;capital-gain&#39;, &#39;capital-loss&#39;, &#39;hours-per-week&#39;]</code></pre>
+</div>
+</div>
+<section id="preprocessing-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="preprocessing-pipeline">Preprocessing Pipeline</h3>
+<p>We can now set up a <code>ColumnTransformer</code>!</p>
+<ul>
+<li>Categorical variables will be <strong>one-hot encoded</strong>.</li>
+<li>Numerical variables will be <strong>standard scaled</strong>.</li>
+</ul>
+<div id="1b118d2c06bb1f7f" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:55:29.152059Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:55:29.126061Z&quot;}" data-execution_count="223">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a><span class="co"># Build preprocessor</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a>preprocessor <span class="op">=</span> ColumnTransformer(transformers<span class="op">=</span>[</span>
+<span id="cb17-3"><a href="#cb17-3"></a>    (<span class="st">&quot;cat&quot;</span>, OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">&quot;ignore&quot;</span>), categorical_cols),</span>
+<span id="cb17-4"><a href="#cb17-4"></a>    (<span class="st">&quot;num&quot;</span>, StandardScaler(), numerical_cols)</span>
+<span id="cb17-5"><a href="#cb17-5"></a>])</span>
+<span id="cb17-6"><a href="#cb17-6"></a></span>
+<span id="cb17-7"><a href="#cb17-7"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb17-8"><a href="#cb17-8"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>, stratify<span class="op">=</span>y  <span class="co"># stratify for balanced target</span></span>
+<span id="cb17-9"><a href="#cb17-9"></a>)</span>
+<span id="cb17-10"><a href="#cb17-10"></a></span>
+<span id="cb17-11"><a href="#cb17-11"></a><span class="bu">print</span>(<span class="ss">f&quot;Training data shape: </span><span class="sc">{</span>X_train<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb17-12"><a href="#cb17-12"></a><span class="bu">print</span>(<span class="ss">f&quot;Test data shape: </span><span class="sc">{</span>X_test<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Training data shape: (26048, 14)
+Test data shape: (6513, 14)</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="preliminary-modeling" class="level2">
+<h2 class="anchored" data-anchor-id="preliminary-modeling">Preliminary Modeling</h2>
+<section id="bagging-classifier" class="level3">
+<h3 class="anchored" data-anchor-id="bagging-classifier">Bagging Classifier</h3>
+<p>Bagging (Bootstrap Aggregating) is an ensemble technique that trains multiple base models on different random subsets of the data and aggregates their predictions. In this case, we use a Decision Tree as the base estimator inside a Bagging Classifier. Bagging helps reduce model variance and can improve accuracy, especially for unstable models like trees.</p>
+<p>We use GridSearchCV with Stratified 5-fold cross-validation to tune hyperparameters such as the number of trees, maximum depth of each tree, and sample/feature proportions.</p>
+<p>Below, we show the best parameters found and the model’s performance on the test set.</p>
+<div id="10a7d0412a4b186c" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:57:57.278480Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:55:29.256104Z&quot;}" data-execution_count="224">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1"></a><span class="co"># Set up Bagging pipeline</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a>bagging_pipeline <span class="op">=</span> Pipeline([</span>
+<span id="cb19-3"><a href="#cb19-3"></a>    (<span class="st">&quot;preprocessor&quot;</span>, preprocessor),</span>
+<span id="cb19-4"><a href="#cb19-4"></a>    (<span class="st">&quot;model&quot;</span>, BaggingClassifier(</span>
+<span id="cb19-5"><a href="#cb19-5"></a>        estimator<span class="op">=</span>DecisionTreeClassifier(class_weight<span class="op">=</span><span class="st">&quot;balanced&quot;</span>, random_state<span class="op">=</span><span class="dv">42</span>),</span>
+<span id="cb19-6"><a href="#cb19-6"></a>        random_state<span class="op">=</span><span class="dv">42</span></span>
+<span id="cb19-7"><a href="#cb19-7"></a>    ))</span>
+<span id="cb19-8"><a href="#cb19-8"></a>])</span>
+<span id="cb19-9"><a href="#cb19-9"></a></span>
+<span id="cb19-10"><a href="#cb19-10"></a><span class="co"># Bagging hyperparameter grid</span></span>
+<span id="cb19-11"><a href="#cb19-11"></a>bagging_param_grid <span class="op">=</span> {</span>
+<span id="cb19-12"><a href="#cb19-12"></a>    <span class="st">&quot;model__n_estimators&quot;</span>: [<span class="dv">10</span>, <span class="dv">50</span>, <span class="dv">100</span>],</span>
+<span id="cb19-13"><a href="#cb19-13"></a>    <span class="st">&quot;model__estimator__max_depth&quot;</span>: [<span class="va">None</span>, <span class="dv">5</span>, <span class="dv">10</span>],</span>
+<span id="cb19-14"><a href="#cb19-14"></a>    <span class="st">&quot;model__max_samples&quot;</span>: [<span class="fl">0.5</span>, <span class="fl">1.0</span>],</span>
+<span id="cb19-15"><a href="#cb19-15"></a>    <span class="st">&quot;model__max_features&quot;</span>: [<span class="fl">0.5</span>, <span class="fl">1.0</span>]</span>
+<span id="cb19-16"><a href="#cb19-16"></a>}</span>
+<span id="cb19-17"><a href="#cb19-17"></a></span>
+<span id="cb19-18"><a href="#cb19-18"></a><span class="co"># Stratified 5-fold cross-validation</span></span>
+<span id="cb19-19"><a href="#cb19-19"></a>stratified_cv <span class="op">=</span> StratifiedKFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb19-20"><a href="#cb19-20"></a></span>
+<span id="cb19-21"><a href="#cb19-21"></a><span class="co"># Grid Search with Stratified CV</span></span>
+<span id="cb19-22"><a href="#cb19-22"></a>bagging_grid <span class="op">=</span> GridSearchCV(</span>
+<span id="cb19-23"><a href="#cb19-23"></a>    bagging_pipeline,</span>
+<span id="cb19-24"><a href="#cb19-24"></a>    param_grid<span class="op">=</span>bagging_param_grid,</span>
+<span id="cb19-25"><a href="#cb19-25"></a>    cv<span class="op">=</span>stratified_cv,</span>
+<span id="cb19-26"><a href="#cb19-26"></a>    scoring<span class="op">=</span><span class="st">&quot;accuracy&quot;</span>,</span>
+<span id="cb19-27"><a href="#cb19-27"></a>    n_jobs<span class="op">=-</span><span class="dv">1</span></span>
+<span id="cb19-28"><a href="#cb19-28"></a>)</span>
+<span id="cb19-29"><a href="#cb19-29"></a></span>
+<span id="cb19-30"><a href="#cb19-30"></a><span class="co"># Fit the grid search</span></span>
+<span id="cb19-31"><a href="#cb19-31"></a>bagging_grid.fit(X_train, y_train)</span>
+<span id="cb19-32"><a href="#cb19-32"></a></span>
+<span id="cb19-33"><a href="#cb19-33"></a><span class="co"># Evaluate</span></span>
+<span id="cb19-34"><a href="#cb19-34"></a><span class="bu">print</span>(<span class="st">&quot;Best Bagging Parameters:&quot;</span>, bagging_grid.best_params_)</span>
+<span id="cb19-35"><a href="#cb19-35"></a><span class="bu">print</span>(<span class="st">&quot;Best Bagging Accuracy (CV):&quot;</span>, bagging_grid.best_score_)</span>
+<span id="cb19-36"><a href="#cb19-36"></a></span>
+<span id="cb19-37"><a href="#cb19-37"></a><span class="co"># Test set evaluation</span></span>
+<span id="cb19-38"><a href="#cb19-38"></a>y_pred_bagging <span class="op">=</span> bagging_grid.predict(X_test)</span>
+<span id="cb19-39"><a href="#cb19-39"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Bagging Test Set Performance:&quot;</span>)</span>
+<span id="cb19-40"><a href="#cb19-40"></a><span class="bu">print</span>(classification_report(y_test, y_pred_bagging))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Best Bagging Parameters: {&#39;model__estimator__max_depth&#39;: None, &#39;model__max_features&#39;: 0.5, &#39;model__max_samples&#39;: 0.5, &#39;model__n_estimators&#39;: 100}
+Best Bagging Accuracy (CV): 0.8595670125049331
+
+Bagging Test Set Performance:
+              precision    recall  f1-score   support
+
+       &lt;=50K       0.90      0.92      0.91      4945
+        &gt;50K       0.73      0.66      0.69      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.79      0.80      6513
+weighted avg       0.86      0.86      0.86      6513
+</code></pre>
+</div>
+</div>
+<section id="results" class="level4">
+<h4 class="anchored" data-anchor-id="results">Results</h4>
+<ul>
+<li>The best hyperparameters selected were 100 estimators, using 50% of samples and 50% of features per tree, with no maximum depth limit.</li>
+<li>The cross-validated accuracy was approximately <strong>86%</strong>, suggesting good generalization performance.</li>
+<li>On the test set:
+<ul>
+<li>The overall accuracy was also <strong>86%</strong>, closely matching the CV results.</li>
+<li>The model performed better on the majority class (<code>&lt;=50K</code>) with high precision and recall.</li>
+<li>For the minority class (<code>&gt;50K</code>), the recall was lower (<strong>66%</strong>), meaning it missed some high earners.</li>
+</ul></li>
+</ul>
+<p>This is expected due to the class imbalance in the dataset, though the use of <code>class_weight=&quot;balanced&quot;</code> helped improve minority class recall compared to a naive model.</p>
+</section>
+</section>
+<section id="random-forest-classifier" class="level3">
+<h3 class="anchored" data-anchor-id="random-forest-classifier">Random Forest Classifier</h3>
+<p>Random Forest is a specialized ensemble method that builds multiple decision trees using both random subsets of the data and random subsets of features at each split. This reduces correlation between the trees and often improves overall performance compared to standard bagging.</p>
+<p>Again, we use GridSearchCV with Stratified 5-fold cross-validation to find the best hyperparameters for the number of trees, maximum depth, and number of features considered at each split.</p>
+<p>Below, we show the best parameters found and the model’s test set results.</p>
+<div id="2cdd1d0832f2b7e2" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:59:13.890302Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:57:57.384655Z&quot;}" data-execution_count="225">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1"></a><span class="co"># Set up Random Forest pipeline</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a>rf_pipeline <span class="op">=</span> Pipeline([</span>
+<span id="cb21-3"><a href="#cb21-3"></a>    (<span class="st">&quot;preprocessor&quot;</span>, preprocessor),</span>
+<span id="cb21-4"><a href="#cb21-4"></a>    (<span class="st">&quot;model&quot;</span>, RandomForestClassifier(class_weight<span class="op">=</span><span class="st">&quot;balanced&quot;</span>, random_state<span class="op">=</span><span class="dv">42</span>))</span>
+<span id="cb21-5"><a href="#cb21-5"></a>])</span>
+<span id="cb21-6"><a href="#cb21-6"></a></span>
+<span id="cb21-7"><a href="#cb21-7"></a><span class="co"># Random Forest hyperparameter grid</span></span>
+<span id="cb21-8"><a href="#cb21-8"></a>rf_param_grid <span class="op">=</span> {</span>
+<span id="cb21-9"><a href="#cb21-9"></a>    <span class="st">&quot;model__n_estimators&quot;</span>: [<span class="dv">100</span>, <span class="dv">200</span>],  <span class="co"># number of trees</span></span>
+<span id="cb21-10"><a href="#cb21-10"></a>    <span class="st">&quot;model__max_depth&quot;</span>: [<span class="va">None</span>, <span class="dv">10</span>, <span class="dv">20</span>],  <span class="co"># max depth of trees</span></span>
+<span id="cb21-11"><a href="#cb21-11"></a>    <span class="st">&quot;model__max_features&quot;</span>: [<span class="st">&quot;sqrt&quot;</span>, <span class="st">&quot;log2&quot;</span>]  <span class="co"># feature subset strategy</span></span>
+<span id="cb21-12"><a href="#cb21-12"></a>}</span>
+<span id="cb21-13"><a href="#cb21-13"></a></span>
+<span id="cb21-14"><a href="#cb21-14"></a><span class="co"># Stratified 5-fold CV</span></span>
+<span id="cb21-15"><a href="#cb21-15"></a>stratified_cv <span class="op">=</span> StratifiedKFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb21-16"><a href="#cb21-16"></a></span>
+<span id="cb21-17"><a href="#cb21-17"></a><span class="co"># Grid Search with Stratified CV</span></span>
+<span id="cb21-18"><a href="#cb21-18"></a>rf_grid <span class="op">=</span> GridSearchCV(</span>
+<span id="cb21-19"><a href="#cb21-19"></a>    rf_pipeline,</span>
+<span id="cb21-20"><a href="#cb21-20"></a>    param_grid<span class="op">=</span>rf_param_grid,</span>
+<span id="cb21-21"><a href="#cb21-21"></a>    cv<span class="op">=</span>stratified_cv,</span>
+<span id="cb21-22"><a href="#cb21-22"></a>    scoring<span class="op">=</span><span class="st">&quot;accuracy&quot;</span>,</span>
+<span id="cb21-23"><a href="#cb21-23"></a>    n_jobs<span class="op">=-</span><span class="dv">1</span></span>
+<span id="cb21-24"><a href="#cb21-24"></a>)</span>
+<span id="cb21-25"><a href="#cb21-25"></a></span>
+<span id="cb21-26"><a href="#cb21-26"></a><span class="co"># Fit the grid search</span></span>
+<span id="cb21-27"><a href="#cb21-27"></a>rf_grid.fit(X_train, y_train)</span>
+<span id="cb21-28"><a href="#cb21-28"></a></span>
+<span id="cb21-29"><a href="#cb21-29"></a><span class="co"># Best parameters and score</span></span>
+<span id="cb21-30"><a href="#cb21-30"></a><span class="bu">print</span>(<span class="st">&quot;Best Random Forest Parameters:&quot;</span>, rf_grid.best_params_)</span>
+<span id="cb21-31"><a href="#cb21-31"></a><span class="bu">print</span>(<span class="st">&quot;Best Random Forest Accuracy (CV):&quot;</span>, rf_grid.best_score_)</span>
+<span id="cb21-32"><a href="#cb21-32"></a></span>
+<span id="cb21-33"><a href="#cb21-33"></a><span class="co"># Test set evaluation</span></span>
+<span id="cb21-34"><a href="#cb21-34"></a>y_pred_rf <span class="op">=</span> rf_grid.predict(X_test)</span>
+<span id="cb21-35"><a href="#cb21-35"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Random Forest Test Set Performance:&quot;</span>)</span>
+<span id="cb21-36"><a href="#cb21-36"></a><span class="bu">print</span>(classification_report(y_test, y_pred_rf))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Best Random Forest Parameters: {&#39;model__max_depth&#39;: None, &#39;model__max_features&#39;: &#39;sqrt&#39;, &#39;model__n_estimators&#39;: 100}
+Best Random Forest Accuracy (CV): 0.8529255175874916
+
+Random Forest Test Set Performance:
+              precision    recall  f1-score   support
+
+       &lt;=50K       0.89      0.93      0.91      4945
+        &gt;50K       0.75      0.63      0.68      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.82      0.78      0.80      6513
+weighted avg       0.85      0.86      0.85      6513
+</code></pre>
+</div>
+</div>
+<section id="results-1" class="level4">
+<h4 class="anchored" data-anchor-id="results-1">Results</h4>
+<ul>
+<li>The best hyperparameters selected were 100 estimators, no maximum depth limit, and square root (<code>sqrt</code>) of features considered at each split.</li>
+<li>The cross-validated accuracy was approximately <strong>85%</strong>, slightly lower than the Bagging model but still strong.</li>
+<li>On the test set:
+<ul>
+<li>The overall accuracy again was about <strong>86%</strong>, very similar to Bagging.</li>
+<li>The Random Forest showed slightly higher precision for the minority class (<code>&gt;50K</code>) but slightly lower recall (<strong>63%</strong> compared to Bagging’s 66%).</li>
+</ul></li>
+</ul>
+<p>Overall, both ensemble methods performed similarly, but Bagging achieved slightly better recall on the minority class. This suggests Bagging might be slightly better suited for this task when classifying high-income individuals is a priority.</p>
+</section>
+<section id="feature-importance-random-forest" class="level4">
+<h4 class="anchored" data-anchor-id="feature-importance-random-forest">Feature Importance (Random Forest)</h4>
+<p>One of the advantages of ensemble tree models like Random Forest is the ability to extract feature importance scores. These scores show which features contributed the most to the model’s decision-making.</p>
+<p>Below, we examine the top features based on importance scores.</p>
+<div id="e2530a49b136afdf" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:59:14.020097Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:59:13.998083Z&quot;}" data-execution_count="226">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1"></a><span class="co"># Get the best Random Forest model</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a>best_rf <span class="op">=</span> rf_grid.best_estimator_</span>
+<span id="cb23-3"><a href="#cb23-3"></a></span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="co"># Get feature names after preprocessing</span></span>
+<span id="cb23-5"><a href="#cb23-5"></a><span class="co"># This is a little tricky because one-hot encoding creates new feature names</span></span>
+<span id="cb23-6"><a href="#cb23-6"></a><span class="co"># But we can handle it like this:</span></span>
+<span id="cb23-7"><a href="#cb23-7"></a>ohe <span class="op">=</span> best_rf.named_steps[<span class="st">&#39;preprocessor&#39;</span>].named_transformers_[<span class="st">&#39;cat&#39;</span>]</span>
+<span id="cb23-8"><a href="#cb23-8"></a>encoded_cat_features <span class="op">=</span> ohe.get_feature_names_out(categorical_cols)</span>
+<span id="cb23-9"><a href="#cb23-9"></a></span>
+<span id="cb23-10"><a href="#cb23-10"></a><span class="co"># Combine numerical and categorical feature names</span></span>
+<span id="cb23-11"><a href="#cb23-11"></a>feature_names <span class="op">=</span> np.concatenate([encoded_cat_features, numerical_cols])</span>
+<span id="cb23-12"><a href="#cb23-12"></a></span>
+<span id="cb23-13"><a href="#cb23-13"></a><span class="co"># Now get importances</span></span>
+<span id="cb23-14"><a href="#cb23-14"></a>importances <span class="op">=</span> best_rf.named_steps[<span class="st">&#39;model&#39;</span>].feature_importances_</span>
+<span id="cb23-15"><a href="#cb23-15"></a></span>
+<span id="cb23-16"><a href="#cb23-16"></a><span class="co"># Create a DataFrame for easy viewing</span></span>
+<span id="cb23-17"><a href="#cb23-17"></a>feature_importance_df <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb23-18"><a href="#cb23-18"></a>    <span class="st">&#39;feature&#39;</span>: feature_names,</span>
+<span id="cb23-19"><a href="#cb23-19"></a>    <span class="st">&#39;importance&#39;</span>: importances</span>
+<span id="cb23-20"><a href="#cb23-20"></a>})</span>
+<span id="cb23-21"><a href="#cb23-21"></a></span>
+<span id="cb23-22"><a href="#cb23-22"></a><span class="co"># Sort by importance</span></span>
+<span id="cb23-23"><a href="#cb23-23"></a>feature_importance_df <span class="op">=</span> feature_importance_df.sort_values(by<span class="op">=</span><span class="st">&#39;importance&#39;</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb23-24"><a href="#cb23-24"></a></span>
+<span id="cb23-25"><a href="#cb23-25"></a><span class="co"># Display top 10 important features</span></span>
+<span id="cb23-26"><a href="#cb23-26"></a>feature_importance_df.head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="226">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">feature</th>
+<th data-quarto-table-cell-role="th">importance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">102</td>
+<td>age</td>
+<td>0.149891</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">103</td>
+<td>fnlwgt</td>
+<td>0.136225</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">27</td>
+<td>marital-status_ Married-civ-spouse</td>
+<td>0.079945</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">107</td>
+<td>hours-per-week</td>
+<td>0.078666</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">105</td>
+<td>capital-gain</td>
+<td>0.064468</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">104</td>
+<td>education-num</td>
+<td>0.064231</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">47</td>
+<td>relationship_ Husband</td>
+<td>0.058262</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>marital-status_ Never-married</td>
+<td>0.035215</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">106</td>
+<td>capital-loss</td>
+<td>0.021410</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">50</td>
+<td>relationship_ Own-child</td>
+<td>0.017920</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="c88535c3ea32ba50" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:59:14.234265Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:59:14.137460Z&quot;}" data-execution_count="227">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1"></a><span class="co"># Plot</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">6</span>))</span>
+<span id="cb24-3"><a href="#cb24-3"></a>sns.barplot(data<span class="op">=</span>feature_importance_df.head(<span class="dv">10</span>), x<span class="op">=</span><span class="st">&quot;importance&quot;</span>, y<span class="op">=</span><span class="st">&quot;feature&quot;</span>)</span>
+<span id="cb24-4"><a href="#cb24-4"></a>plt.title(<span class="st">&quot;Top 10 Important Features - Random Forest&quot;</span>)</span>
+<span id="cb24-5"><a href="#cb24-5"></a>plt.xlabel(<span class="st">&quot;Importance Score&quot;</span>)</span>
+<span id="cb24-6"><a href="#cb24-6"></a>plt.ylabel(<span class="st">&quot;Feature&quot;</span>)</span>
+<span id="cb24-7"><a href="#cb24-7"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img role="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABCgAAAIjCAYAAADBfyoFAAAAOnRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjEwLjEsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmcvc2/+5QAAAAlwSFlzAAAPYQAAD2EBqD+naQAAd+pJREFUeJzt3QW4VNX3//EFXLjkpVtaWrokBFTEJCwQkVLBAAlFka+ogCJKCDYmiKJYiIoNUhKKCKik0goKopQoOf/ns3/Pmf/M3OAm58b79Twjd86cOWefuOBeZ+21swUCgYABAAAAAAD4KLufOwcAAAAAABACFAAAAAAAwHcEKAAAAAAAgO8IUAAAAAAAAN8RoAAAAAAAAL4jQAEAAAAAAHxHgAIAAAAAAPiOAAUAAAAAAPAdAQoAAAAAAOA7AhQAAABAJtO7d2+rWLGi380AgCQhQAEAQDqTLVu2RL0WLFiQ5m157rnn7Nprr7Xy5cu7farTE5/9+/dbv379rHjx4pYvXz47//zz7fvvv0/Uftq2bWvnnHOOZVS7du2ykSNH2urVq9N8X0eOHHH7Suz113rx3UPXXXddmrRx3bp1ro3btm2zzG7atGlh5zQqKsrKli3rfld+++03v5uXbs9T6Ovee++19OiRRx6x2bNn+90MIEuJ8rsBAAAg3GuvvRb2fvr06fbll1/GWl6zZs00b8tjjz1mhw4dsqZNm9ru3bvjXe/UqVN2+eWX25o1a+zuu++2YsWK2bPPPusCDytXrrSqVataZqYAxahRo9wT6/r166d5gEL7Ep3fxBo4cKA1adIkbFlaPWFXgEJtVPuyylP80aNHW6VKley///6z5cuXuw75119/bT/99JPlzp3b7+alu/MUKr0GJxWguOaaa6xz585+NwXIMghQAACQztxwww1h79XZUYAicvmZsHDhwmD2RP78+eNd791337WlS5faO++84/6HXrp06WLVqlWzBx980N544w3LjE6cOOGCMxnBeeedF7w2GdU///zjsnPSo0svvdQaN27sfr755ptdkE4Bvg8//ND9LiD2ecoq9waAxGOIBwAAGZD+Z/yuu+6ycuXKWXR0tFWvXt0mTJhggUAgbD0FFgYMGGAzZsxw6+hJbqNGjWzRokWJ2k+FChXcNk5HAYqSJUvaVVddFVymoR7qmH3wwQd29OjRJB+j13YFPWrVqmV58uSx5s2b248//ug+f/755+3ss892x6Qn9ZHDCbxhI8rgaNGihfu+ntxOmTIl1r727NljN910kzsGba9evXr26quvhq2j7atNOs+TJ0+2KlWquHOvTBEvM6FPnz7BtHU9QZfFixcHh8lofV2zIUOG2L///hu2fQ0JUBBIwwL0xFY/6xwOHTrUTp48GWyDlokyFLx9aThFSn3zzTd2ySWXWMGCBS1v3rzWpk0bW7JkSdg627dvt9tvv93dSzqfRYsWdccWeu513FomGuYTOSQpvvYq0yJ0CJE3JEBBMu2zRIkSdtZZZwU///TTT13QRZ3SAgUKuAyetWvXhm3z999/d9dE39O5L126tHXq1OmMDD1R22Tz5s3BZceOHbMHHnjA/Q7qPKvtWm/+/Pnx3msvvPBC8F7TfbZixYpY+9IwBN3runf15/vvv58qf28k93cvJb766qvgdS1UqJC7XuvXrw9bR/eP2qhMneuvv94KFy5srVq1Cn7++uuvu3OsdhcpUsQNZdq5c2fYNn7++We7+uqrrVSpUu44dI9ovQMHDgTPgc6X/h7w7uGEhrgBSB1kUAAAkMGoM9GxY0fXqVGnWkMKPv/8cze0Qp3bSZMmha2vDt5bb73lUvy9DrU6ot9++22qpVavWrXKGjZsaNmzhz/70NAQdbA2bdpkderUSfJ21bnXE+j+/fu792PHjrUrrrjC7rnnHncc6rj+/fffNm7cOLvxxhtd5yaUPrvssstcoKRbt2729ttv22233Wa5cuVy64sCBepk/fLLL65TpiCGOmbqjKiuxqBBg8K2OXXqVJfGr3obOp9XXnmlGwajjqeWeR1TBUVE29KwDO1XHXqd96eeesp+/fVX91koBSIuvvhia9asmes4zp071yZOnOg6qPq+ghOqC6KftV8vIFS3bt3Tnku18c8//wxbps6brpnOm55sq1OnjBct03FecMEF7hroOoo6x8qUUUdOHTp1TNUenT91FhXYaN26tbvXnnzySfvf//4XHIqU3CFJusY6bp1fdRhFw5169erlzpWyFHR+1Q51UnUvesNK1AFV0OKOO+5wyxSIUjbSjh070nzoiddpV+fZc/DgQXvppZfcvdi3b193TV5++WV3HLovIocHKfNI69xyyy2ug6z7XNd8y5YtljNnTrfOF1984Y5TgQT9fuzbty8YlEnJ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qPvsxIkT1rlzZ2vTpo398MMPbhv9+vUL69SrU642zpkzx70WLlxojz76aILnaPz48VavXj3X8b733ntt0KBB9uWXX5rfunfvbmeddZatWLHCVq5c6dqWM2fOsHM1ZswYmz59uru+urYKyHgOHz7szu+8efPcsSnY06FDB3dOQ02cODEYeLj99tvttttuc9fS28YVV1xhtWrVcm3QEBbvesTn6NGjdvDgwbAXAAAAACQFQzwyIT1dHzduXPD9ww8/7IITemrueeWVV1ygYdOmTVatWrVY29DTdU/lypXtySefdE/j1XnVk3lv2ESJEiXiLdyoTAkFJtSRbtGihVs2Y8YMt18FFK699lq3TMEKBVKqVKni3isDZPTo0e5ndXQPHDjgOsze58q0CHXq1CmXnaBsAFF2iDro6sjHR1kY6vyLjl9tnDRpkl100UWWHD/++KM7L6EUjEkqBRLuvvtuq1GjRvBahtK5evrpp61Zs2bBYJTOhzIelGWioIteHgWZ3n//fXcddF49CmIoMCHDhg1zxz5//nyrXr26vfHGG+6cvvzyyy6Donbt2vbrr7+6IEZ8xo4da6NGjUry8QIAAACAhwyKTEjDAkIpC0KdT3WgvZfXAVb2QVz05FxP3pX+r46/Mhgk8kl8QtavX29RUVHBzrQULVrUdYL1mUdDP7zgg5QuXTo4nESBEGVhaCiD2qNMjdDhH96QBS84Efn9+DRv3jzW+9A2JZWOScUwQ1+ffPJJkrdz55132s0332zt2rVzWSCR10fnU4Eij66jAkRe2xVAUraDghZarmutzyKvW926dYM/KxtFw3i8c6b19bmCE/Gdr0jDhw93gSTvFTrsBAAAAAASgwBFJqS6CqHUaVXnPrIDrQyH1q1bx/r+P//84wICqoGgjAcNN9BTeK/oZmoLHcLgdZhDsw+mTp3qhnYoC+Ott95yGQ/Lly9P8PvKADiTNKTm7LPPDntVqFAhbJ3s2bPHyqoIHeoiGk6xdu1au/zyy+2rr75ywyy8c58YCk5ofWXLLF682F3nOnXqxLpuqX3OoqOj3f0S+gIAAACApCBAkQU0bNjQdXqVaRDZiY4MZsiGDRts37597gn+eeed557SR2YkeDODnDx5Mt796im+akh88803wWXarmodqOOdFBqioqf0S5cutXPOOccNQ0iJ0ACH9z5y6EhqK168uCveqQCQJ64pSBWAGTJkiH3xxRd21VVXuQCNR+cztGimzqXqUHht11AVZZxceeWVLjChzAjVD0kKbUv1Pv777794zxcAAAAApDYCFFlA//797a+//nKzVigbQsMGNGtGnz594gwwaFiHAhBPPfWUbdmyxdUvUC2DUMoO0FN3FaXcu3evy9KIpPoJmlGib9++9vXXX7uhJjfccIObNUPLE2Pr1q0uMKEMCs3coU67Mj9SGkxQR151OlSDQzN4vPPOO65QZlrSUBcNZ/nf//7nroGCLKqd4fn3339dnQjNWqJjVRt1vUKPVZkPd9xxhwv6aBiOghHnnnuuqz/hnfNZs2a5wIfOt2ZfSWpmhL6ja6vrtm7dOjdURUVMAQAAACAtEaDIAsqUKeM6uwpGtG/f3j1Z17SbqlGgYQdxPelXx1mddmU6KJMisoOqIIOKIqrQpKa0DC3AGEpP/1UTQ0UuVcdAQxzU4Y0cYhAfdeiV0XH11Ve7zALN4KGAyy233GIpcdddd7lMBGVmqIjo448/HpySNa2onsbrr7/ujl/X4M0333RDOjw5cuRwGSaallXHqllWNC1raPFJnQ8VtVQQQYU+VWNCw148Og5N6arhMBrWo2NSBk1SaJsfffSRK/yp83PffffZY489lkpnAQAAAADili2QnKkGgAxMQ10UoNELaUOzrxQsWNDq3THFckTn8bs5ALKQleN7+t0EAAAQR99AxfRPV6uODAoAAAAAAOA7AhRACM1aEjoda+irdu3afjcPAAAAADKtKL8bAJxpCc1q0bFjR1fMMi6JrZsBAAAAAEg6AhRAiAIFCrgXAAAAAODMYogHAAAAAADwHQEKAAAAAADgOwIUAAAAAADAdwQoAAAAAACA7whQAAAAAAAA3xGgAAAAAAAAviNAAQAAAAAAfEeAAgAAAAAA+C7K7wYAyLwWPdzNYmJi/G4GAAAAgAyADAoAAAAAAOA7AhQAAAAAAMB3BCgAAAAAAIDvCFAAAAAAAADfEaAAAAAAAAC+I0ABAAAAAAB8R4ACAAAAAAD4jgAFAAAAAADwXZTfDQCQebUe8abliM7jdzOARFk5vqffTQAAAMjSyKAAAAAAAAC+I0ABAAAAAAB8R4ACAAAAAAD4jgAFAAAAAADwHQEKAAAAAADgOwIUAAAAAADAdwQoAAAAAACA7whQAAAAAAAA3xGgAAAAAAAAviNAAQAAAAAAfEeAAgAAAAAA+I4ABQAAAAAA8B0BijOkYsWKNnny5HSzHWQd06ZNs0KFCqV4O9myZbPZs2enSpsAAAAAIBIBijNkxYoV1q9fP987e8ndb3oIjKjtuXPntu3bt4ct79y5s/Xu3du3dqV3Xbt2tU2bNvndDAAAAABIEAGKNHbs2DH3Z/HixS1v3rx+NyfDU5DigQcesPR6ndPb/o8fP2558uSxEiVKnPE2AQAAAEBSZNkARdu2be2OO+6wwYMHW+HCha1kyZL24osv2j///GN9+vSxAgUK2Nlnn22ffvpp8DsnT560m266ySpVquQ6fdWrV7cnnngibLt6kq8n+mPGjLEyZcq4dSIzEPSzXHnlla7D7b3fvHmzderUybUlf/781qRJE5s7d26SO6oDBgyw0qVLu2yDChUq2NixY1O0X50rZS0MGTLEfU8vGTlypNWvXz9s/zpGb7uyYMECa9q0qeXLl88NM2jZsmWsDIik0LG9/vrr9tNPP8W7zqlTp9wxe9epXr169u677wY/O+uss+y5554L+86qVasse/bswbbt37/fbr75ZhdYiomJsQsuuMDWrFkTXN879pdeesntR+fa7/ts27Zt7tq89dZb1qZNG9emGTNmxDnE44MPPrCGDRu6dSpXrmyjRo2yEydOBD//+eefrXXr1u7zWrVq2ZdffpnIKwQAAAAAyZNlAxTy6quvWrFixezbb791ncjbbrvNrr32WmvRooV9//331r59e+vRo4cdOXIkrHP7zjvv2Lp169yT/P/973/29ttvh2133rx5tnHjRtepmzNnTpzDPWTq1Km2e/fu4PvDhw/bZZdd5r6vDvMll1xiHTp0sB07diT6mJ588kn78MMPXZvUBnVQvYBBcvc7a9Ysd9yjR49239MrMdThVSdaneUffvjBli1b5oa5eAGO5FCA44orrrB777033nUUnJg+fbpNmTLF1q5d6wIrN9xwgy1cuNAFIbp162ZvvPFG2Hd0nrRtBXRE98GePXtc4GDlypWuM3/hhRfaX3/9FfzOL7/8Yu+99547P6tXr04395nOzaBBg2z9+vV28cUXx2rP4sWLrWfPnm4dbf/55593QQwFO7z9X3XVVZYrVy775ptv3HkcNmxYgtfl6NGjdvDgwbAXAAAAACRFlGVherI+YsQI9/Pw4cPt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bLZ69ep415k2bZoVKlQoSee4d+/e1rlz51RtKwAAAACEIkCBOC1YsMB1dPfv3x+2fNasWfbQQw9ZenIm2vTXX3+5IEiFChUsV65cVqZMGbvxxhttx44dltF07drVNm3a5HczAAAAACAMAYoM7tixY2d0f0WKFLECBQpYepLWbVJw4txzz7W5c+falClT7JdffrGZM2e6P5s0aWJbtmyxjCRPnjxWokQJv5sBAAAAAGEIUGQwGs4wYMAA9zS/WLFidvHFF7vlP/30k1166aWWP39+K1mypPXo0cP+/PPPeLfz2muvWePGjV3HvlSpUnb99dfbnj17gsMEzj//fPdz4cKFXSaFUvzjGk7x999/W8+ePd16efPmdW34+eefYw0n+Pzzz61mzZqufZdccont3r07LFujadOmli9fPrduy5Ytbfv27bHaW7FiRStYsKBdd911dujQobBzEtomraeMim7durltli1b1p555plkn/P77rvPdu3a5QIUOr7y5ctb69at3THlzJnT+vfv79abM2eOa//Jkyfdew2z0Lm79957g9u6+eab7YYbbkj0uYnLqVOnbNy4cXb22WdbdHS0a8+YMWPC1lHQRNdQ16RevXq2bNmyeId4RFL777zzTrdO0aJF7Z577rFAIJDMswcAAAAAiUOAIgN69dVX3TCDJUuWuCf6GoZxwQUXWIMGDey7776zzz77zP744w/r0qVLvNs4fvy468SvWbPGZs+e7YISXhCiXLly9t5777mfN27c6DrMTzzxRJzb0Xe0zw8//NB1gtWRveyyy9z2PUeOHLEJEya4IMOiRYvcsIihQ4e6z06cOOFqG7Rp08Z++OEHt41+/fq5jr1n8+bNro0KAOi1cOFCe/TRRxM8R+PHj3cd81WrVrkAwaBBg+zLL79M4pn+v2CAsiW6d+/uAjmRmQi33367CzAoy+K8885zgRPtU9ROBZEUgPFomQIqiTk38Rk+fLg7/vvvv9/WrVtnb7zxhgtKRQZVtB0FSapVq+aCNTrXiTFx4kQXxHjllVfs66+/dsf2/vvvJ/ido0eP2sGDB8NeAAAAAJAUUUlaG+lC1apV3RN0z8MPP+yCE4888khwmTqXCjSo1oA6qJFUP8FTuXJle/LJJ91whcOHD7sn+Ro2IRoKEN/TdmVKKDChQEmLFi3cshkzZrj9KqBw7bXXumUK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AwYMsLPOOsv9G1GrVi2bMmVKGh9F1rsWa9eutauvvtqtn9DfOUm9vkj96zB27Fj3d1GBAgWsRIkS1rlzZ9u4cWMaH0XmkBa/E55HH33UrTd48OA0aHkWpVk8ACAhM2fODOTKlSvwyiuvBNauXRvo27dvoFChQoE//vgjzvWXLFkSyJEjR2DcuHGBdevWBUaMGBHImTNn4Mcffwyu8+ijjwYKFiwYmD17dmDNmjWBjh07BipVqhT4999/z+CRZe3rsH///kC7du0Cb731VmDDhg2BZcuWBZo2bRpo1KjRGT6yjCctfic8s2bNCtSrVy9QpkyZwKRJk87A0WRcaXEdfvnll0CRIkUCd999d+D777937z/44IN4t4m0uQ7aRpUqVQLz588PbN26NfD888+77+haIPWuxbfffhsYOnRo4M033wyUKlUqzr9zkrpNpM11uPjiiwNTp04N/PTTT4HVq1cHLrvsskD58uUDhw8fPgNHlHGlxbUIXbdixYqBunXrBgYNGpSGR5G1EKAAcFrqtPbv3z/4/uTJk67zNHbs2DjX79KlS+Dyyy8PW9asWbPALbfc4n4+deqU+0t//Pjxwc/VWY6Ojnb/IODMXIf4/rFV7Hr79u2p2PLMJ62uxa+//hooW7as+x/QChUqEKDw4Tp07do1cMMNN6RhqzOftLgOtWvXDowePTpsnYYNGwbuu+++VG9/Vr4WoeL7Oycl28yq0uI6RNqzZ4/793rhwoUpbm9mllbX4tChQ4GqVasGvvzyy0CbNm0IUKQihngASNCxY8ds5cqVbgiGJ3v27O79smXL4vyOloeuLxdffHFw/a1bt9rvv/8eto5SqZV2F982s7q0uA5xOXDggEtVLFSoUCq2PnNJq2tx6tQp69Gjh919991Wu3btNDyCzCEtroOuwccff2zVqlVzy5VGrb+XZs+encZHk3Gl1e9DixYt7MMPP7TffvvNDQmcP3++bdq0ydq3b5+GR5P1roUf28zsztQ507/XUqRIkVTbZmaTlteif//+dvnll8f6uwwpR4ACQIL+/PNPO3nypJUsWTJsud4ryBAXLU9ofe/PpGwzq0uL6xDpv//+czUpunXrZjExManY+swlra7FY489ZlFRUTZw4MA0annmkhbXYc+ePa72gcYUX3LJJfbFF1/YlVdeaVdddZUtXLgwDY8m40qr34en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" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="key-observations" class="level3">
+<h3 class="anchored" data-anchor-id="key-observations">Key Observations:</h3>
+<ul>
+<li><strong>Age</strong> was the most important feature for predicting income, suggesting that older individuals were more likely to earn above $50K.</li>
+<li><strong>Final weight (<code>fnlwgt</code>)</strong> was also highly influential. Although this variable represents a census-based weighting factor, it often captures socio-economic factors indirectly.</li>
+<li><strong>Marital status</strong> (particularly being married) and <strong>hours worked per week</strong> were strong predictors, consistent with real-world expectations.</li>
+<li><strong>Capital gain</strong> and <strong>capital loss</strong> — financial measures of investment income — were important, further reinforcing that additional non-wage income correlates with higher overall earnings.</li>
+<li><strong>Education level (<code>education-num</code>)</strong> also contributed meaningfully, highlighting that higher education generally improves earning potential.</li>
+<li>Certain relationship statuses (such as being a husband or an own-child) also carried some predictive value.</li>
+</ul>
+<p>Overall, the model suggests that both <strong>demographic</strong> factors (age, marital status) and <strong>economic activity</strong> (hours worked, capital gains) are critical for income prediction.</p>
+<p>Note: Although <code>fnlwgt</code> appears important statistically, its real-world interpretability is limited because it is a survey design variable. Caution is needed when drawing conclusions based on it.</p>
+</section>
+</section>
+<section id="naive-bayes-and-neural-networks" class="level2">
+<h2 class="anchored" data-anchor-id="naive-bayes-and-neural-networks">Naive Bayes and Neural Networks</h2>
+<p>Now that we have explored two ensemble models (Bagging and Random Forest), we will move on to <strong>Naive Bayes</strong> and <strong>Neural Networks</strong>.</p>
+<p>These models operate very differently compared to decision trees: - <strong>Naive Bayes</strong> is a probabilistic model that assumes feature independence and is often effective for simple classification tasks. - <strong>Neural Networks</strong> are more flexible, learning complex nonlinear relationships between features and the target.</p>
+<p>We will evaluate how these models perform on the same income prediction task.</p>
+<section id="naive-bayes-classifier" class="level3">
+<h3 class="anchored" data-anchor-id="naive-bayes-classifier">Naive Bayes Classifier</h3>
+<p>Naive Bayes is a simple probabilistic model that assumes all features are independent of each other. Despite this strong assumption, it can perform surprisingly well on many classification tasks.</p>
+<p>We apply a basic Gaussian Naive Bayes model to predict income and evaluate its effectiveness compared to more complex ensemble methods.</p>
+<section id="handling-class-imbalance-for-naive-bayes" class="level4">
+<h4 class="anchored" data-anchor-id="handling-class-imbalance-for-naive-bayes">Handling Class Imbalance for Naive Bayes</h4>
+<p>Unlike tree-based models, Naive Bayes does not have a <code>class_weight</code> argument. However, we can account for class imbalance by adjusting the prior probabilities of the classes using the <code>priors</code> argument. Instead of setting a fixed prior manually, we include different class prior probabilities as a hyperparameter in our GridSearchCV. This allows us to tune how much emphasis the model places on minority vs majority classes during prediction, ensuring the best balance between sensitivity and overall accuracy.</p>
+<p>Note: While Categorical Naive Bayes can sometimes be better for purely categorical datasets, in this case, the features were a mix of continuous and categorical variables, and the data was processed numerically. Thus, we use Gaussian Naive Bayes as the appropriate model for this task.</p>
+<div id="93eb2a2a53153dd8" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T03:59:15.011422Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:59:14.257129Z&quot;}" data-execution_count="228">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1"></a><span class="im">from</span> sklearn.naive_bayes <span class="im">import</span> GaussianNB</span>
+<span id="cb25-2"><a href="#cb25-2"></a></span>
+<span id="cb25-3"><a href="#cb25-3"></a><span class="co"># Different for Naive Bayes</span></span>
+<span id="cb25-4"><a href="#cb25-4"></a>preprocessor <span class="op">=</span> ColumnTransformer(transformers<span class="op">=</span>[</span>
+<span id="cb25-5"><a href="#cb25-5"></a>    (<span class="st">&quot;cat&quot;</span>, OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">&quot;ignore&quot;</span>, sparse_output<span class="op">=</span><span class="va">False</span>), categorical_cols),</span>
+<span id="cb25-6"><a href="#cb25-6"></a>    (<span class="st">&quot;num&quot;</span>, StandardScaler(), numerical_cols)</span>
+<span id="cb25-7"><a href="#cb25-7"></a>])</span>
+<span id="cb25-8"><a href="#cb25-8"></a></span>
+<span id="cb25-9"><a href="#cb25-9"></a>class_distribution <span class="op">=</span> y_train.value_counts(normalize<span class="op">=</span><span class="va">True</span>).sort_index()</span>
+<span id="cb25-10"><a href="#cb25-10"></a></span>
+<span id="cb25-11"><a href="#cb25-11"></a><span class="co"># Get the values in the order of the classes</span></span>
+<span id="cb25-12"><a href="#cb25-12"></a>priors <span class="op">=</span> class_distribution.values</span>
+<span id="cb25-13"><a href="#cb25-13"></a><span class="bu">print</span>(<span class="ss">f&quot;Dynamic Class Priors: </span><span class="sc">{</span>priors<span class="sc">}</span><span class="ss">&quot;</span>)  <span class="co"># [0.76, 0.24]</span></span>
+<span id="cb25-14"><a href="#cb25-14"></a></span>
+<span id="cb25-15"><a href="#cb25-15"></a></span>
+<span id="cb25-16"><a href="#cb25-16"></a>nb_pipeline <span class="op">=</span> Pipeline([</span>
+<span id="cb25-17"><a href="#cb25-17"></a>    (<span class="st">&quot;preprocessor&quot;</span>, preprocessor),</span>
+<span id="cb25-18"><a href="#cb25-18"></a>    (<span class="st">&quot;model&quot;</span>, GaussianNB(priors<span class="op">=</span>priors))</span>
+<span id="cb25-19"><a href="#cb25-19"></a>])</span>
+<span id="cb25-20"><a href="#cb25-20"></a></span>
+<span id="cb25-21"><a href="#cb25-21"></a><span class="co"># GridSearchCV hyperparameter grid</span></span>
+<span id="cb25-22"><a href="#cb25-22"></a>nb_param_grid <span class="op">=</span> {</span>
+<span id="cb25-23"><a href="#cb25-23"></a>    <span class="st">&quot;model__priors&quot;</span>: [</span>
+<span id="cb25-24"><a href="#cb25-24"></a>        [<span class="fl">0.75</span>, <span class="fl">0.25</span>],  <span class="co"># Slightly favor minority</span></span>
+<span id="cb25-25"><a href="#cb25-25"></a>        [<span class="fl">0.7</span>, <span class="fl">0.3</span>],    <span class="co"># Even more favor to minority</span></span>
+<span id="cb25-26"><a href="#cb25-26"></a>        [<span class="fl">0.8</span>, <span class="fl">0.2</span>],    <span class="co"># Closer to real distribution</span></span>
+<span id="cb25-27"><a href="#cb25-27"></a>        <span class="va">None</span>           <span class="co"># Default behavior (let NB use empirical priors)</span></span>
+<span id="cb25-28"><a href="#cb25-28"></a>    ]</span>
+<span id="cb25-29"><a href="#cb25-29"></a>}</span>
+<span id="cb25-30"><a href="#cb25-30"></a></span>
+<span id="cb25-31"><a href="#cb25-31"></a>stratified_cv <span class="op">=</span> StratifiedKFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb25-32"><a href="#cb25-32"></a></span>
+<span id="cb25-33"><a href="#cb25-33"></a>nb_grid <span class="op">=</span> GridSearchCV(</span>
+<span id="cb25-34"><a href="#cb25-34"></a>    nb_pipeline,</span>
+<span id="cb25-35"><a href="#cb25-35"></a>    param_grid<span class="op">=</span>nb_param_grid,</span>
+<span id="cb25-36"><a href="#cb25-36"></a>    cv<span class="op">=</span>stratified_cv,</span>
+<span id="cb25-37"><a href="#cb25-37"></a>    scoring<span class="op">=</span><span class="st">&quot;accuracy&quot;</span>,</span>
+<span id="cb25-38"><a href="#cb25-38"></a>    n_jobs<span class="op">=-</span><span class="dv">1</span></span>
+<span id="cb25-39"><a href="#cb25-39"></a>)</span>
+<span id="cb25-40"><a href="#cb25-40"></a></span>
+<span id="cb25-41"><a href="#cb25-41"></a>nb_grid.fit(X_train, y_train)</span>
+<span id="cb25-42"><a href="#cb25-42"></a><span class="bu">print</span>(<span class="st">&quot;Best Naive Bayes Parameters:&quot;</span>, nb_grid.best_params_)</span>
+<span id="cb25-43"><a href="#cb25-43"></a><span class="bu">print</span>(<span class="st">&quot;Best Naive Bayes Accuracy (CV):&quot;</span>, nb_grid.best_score_)</span>
+<span id="cb25-44"><a href="#cb25-44"></a></span>
+<span id="cb25-45"><a href="#cb25-45"></a>y_pred_nb <span class="op">=</span> nb_grid.predict(X_test)</span>
+<span id="cb25-46"><a href="#cb25-46"></a></span>
+<span id="cb25-47"><a href="#cb25-47"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Naive Bayes Test Set Performance:&quot;</span>)</span>
+<span id="cb25-48"><a href="#cb25-48"></a><span class="bu">print</span>(classification_report(y_test, y_pred_nb))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Dynamic Class Priors: [0.75917537 0.24082463]
+Best Naive Bayes Parameters: {&#39;model__priors&#39;: [0.8, 0.2]}
+Best Naive Bayes Accuracy (CV): 0.5274494277400439
+
+Naive Bayes Test Set Performance:
+              precision    recall  f1-score   support
+
+       &lt;=50K       0.97      0.41      0.58      4945
+        &gt;50K       0.34      0.95      0.50      1568
+
+    accuracy                           0.54      6513
+   macro avg       0.65      0.68      0.54      6513
+weighted avg       0.81      0.54      0.56      6513
+</code></pre>
+</div>
+</div>
+</section>
+<section id="results-2" class="level4">
+<h4 class="anchored" data-anchor-id="results-2">Results</h4>
+<p>While tuning class priors improved recall for the minority (&gt;50K) class, overall model accuracy dropped significantly (to around 54%).</p>
+<p>This outcome highlights a limitation of Naive Bayes: its assumption of feature independence does not hold for complex real-world datasets like income prediction, where variables such as age, education, and occupation are often highly correlated.As a result, the model struggles to make balanced and accurate predictions, favoring one class too heavily. Although recall for the minority class increased, precision dropped sharply, indicating many false positives.</p>
+</section>
+</section>
+<section id="neural-network-classifier" class="level3">
+<h3 class="anchored" data-anchor-id="neural-network-classifier">Neural Network Classifier</h3>
+<p>Neural Networks (also called Multi-Layer Perceptrons) are flexible models that can capture complex nonlinear relationships between input features and outcomes.</p>
+<p>We build and tune a basic neural network model by adjusting the number of neurons in the hidden layers and the learning rate. We can explore two approaches for building neural networks:</p>
+<ul>
+<li>Using scikit-learn’s <code>MLPClassifier</code> for a fast and simple model.</li>
+<li>Using TensorFlow Keras for a more flexible, customizable model architecture.</li>
+</ul>
+<p>Both models are evaluated using cross-validation and test set performance.</p>
+<section id="part-1-mlp-classifier" class="level4">
+<h4 class="anchored" data-anchor-id="part-1-mlp-classifier">Part 1: MLP Classifier</h4>
+<div id="7c71ae6b7862bd47" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T04:00:25.462930Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T03:59:15.020938Z&quot;}" data-execution_count="229">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1"></a><span class="im">from</span> sklearn.neural_network <span class="im">import</span> MLPClassifier</span>
+<span id="cb27-2"><a href="#cb27-2"></a></span>
+<span id="cb27-3"><a href="#cb27-3"></a><span class="co"># Neural Network pipeline</span></span>
+<span id="cb27-4"><a href="#cb27-4"></a>nn_pipeline <span class="op">=</span> Pipeline([</span>
+<span id="cb27-5"><a href="#cb27-5"></a>    (<span class="st">&quot;preprocessor&quot;</span>, preprocessor),</span>
+<span id="cb27-6"><a href="#cb27-6"></a>    (<span class="st">&quot;model&quot;</span>, MLPClassifier(max_iter<span class="op">=</span><span class="dv">300</span>, random_state<span class="op">=</span><span class="dv">42</span>))</span>
+<span id="cb27-7"><a href="#cb27-7"></a>])</span>
+<span id="cb27-8"><a href="#cb27-8"></a></span>
+<span id="cb27-9"><a href="#cb27-9"></a><span class="co"># Hyperparameter grid</span></span>
+<span id="cb27-10"><a href="#cb27-10"></a>nn_param_grid <span class="op">=</span> {</span>
+<span id="cb27-11"><a href="#cb27-11"></a>    <span class="st">&quot;model__hidden_layer_sizes&quot;</span>: [(<span class="dv">50</span>,), (<span class="dv">100</span>,), (<span class="dv">50</span>, <span class="dv">50</span>)],</span>
+<span id="cb27-12"><a href="#cb27-12"></a>    <span class="st">&quot;model__learning_rate_init&quot;</span>: [<span class="fl">0.001</span>, <span class="fl">0.01</span>]</span>
+<span id="cb27-13"><a href="#cb27-13"></a>}</span>
+<span id="cb27-14"><a href="#cb27-14"></a></span>
+<span id="cb27-15"><a href="#cb27-15"></a>stratified_cv <span class="op">=</span> StratifiedKFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb27-16"><a href="#cb27-16"></a></span>
+<span id="cb27-17"><a href="#cb27-17"></a><span class="co"># GridSearchCV</span></span>
+<span id="cb27-18"><a href="#cb27-18"></a>nn_grid <span class="op">=</span> GridSearchCV(</span>
+<span id="cb27-19"><a href="#cb27-19"></a>    nn_pipeline,</span>
+<span id="cb27-20"><a href="#cb27-20"></a>    param_grid<span class="op">=</span>nn_param_grid,</span>
+<span id="cb27-21"><a href="#cb27-21"></a>    cv<span class="op">=</span>stratified_cv,</span>
+<span id="cb27-22"><a href="#cb27-22"></a>    scoring<span class="op">=</span><span class="st">&quot;accuracy&quot;</span>,</span>
+<span id="cb27-23"><a href="#cb27-23"></a>    n_jobs<span class="op">=-</span><span class="dv">1</span></span>
+<span id="cb27-24"><a href="#cb27-24"></a>)</span>
+<span id="cb27-25"><a href="#cb27-25"></a></span>
+<span id="cb27-26"><a href="#cb27-26"></a><span class="co"># Fit</span></span>
+<span id="cb27-27"><a href="#cb27-27"></a>nn_grid.fit(X_train, y_train)</span>
+<span id="cb27-28"><a href="#cb27-28"></a></span>
+<span id="cb27-29"><a href="#cb27-29"></a><span class="co"># Evaluate</span></span>
+<span id="cb27-30"><a href="#cb27-30"></a><span class="bu">print</span>(<span class="st">&quot;Best Neural Network Parameters (Scikit-learn MLP):&quot;</span>, nn_grid.best_params_)</span>
+<span id="cb27-31"><a href="#cb27-31"></a><span class="bu">print</span>(<span class="st">&quot;Best Neural Network Accuracy (CV):&quot;</span>, nn_grid.best_score_)</span>
+<span id="cb27-32"><a href="#cb27-32"></a></span>
+<span id="cb27-33"><a href="#cb27-33"></a><span class="co"># Test evaluation</span></span>
+<span id="cb27-34"><a href="#cb27-34"></a>y_pred_nn <span class="op">=</span> nn_grid.predict(X_test)</span>
+<span id="cb27-35"><a href="#cb27-35"></a></span>
+<span id="cb27-36"><a href="#cb27-36"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Neural Network Test Set Performance (Scikit-learn):&quot;</span>)</span>
+<span id="cb27-37"><a href="#cb27-37"></a><span class="bu">print</span>(classification_report(y_test, y_pred_nn))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Best Neural Network Parameters (Scikit-learn MLP): {&#39;model__hidden_layer_sizes&#39;: (50,), &#39;model__learning_rate_init&#39;: 0.001}
+Best Neural Network Accuracy (CV): 0.8403337572023026
+
+Neural Network Test Set Performance (Scikit-learn):
+              precision    recall  f1-score   support
+
+       &lt;=50K       0.89      0.92      0.90      4945
+        &gt;50K       0.71      0.62      0.67      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.77      0.78      6513
+weighted avg       0.84      0.85      0.85      6513
+</code></pre>
+</div>
+</div>
+<div id="351558bff911cb5d" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T04:01:59.837351Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T04:00:25.563270Z&quot;}" data-execution_count="230">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1"></a><span class="co"># Imports</span></span>
+<span id="cb29-2"><a href="#cb29-2"></a><span class="im">import</span> tensorflow <span class="im">as</span> tf</span>
+<span id="cb29-3"><a href="#cb29-3"></a>tf.random.set_seed(<span class="dv">42</span>)</span>
+<span id="cb29-4"><a href="#cb29-4"></a><span class="im">from</span> tensorflow <span class="im">import</span> keras</span>
+<span id="cb29-5"><a href="#cb29-5"></a><span class="im">from</span> tensorflow.keras <span class="im">import</span> layers</span>
+<span id="cb29-6"><a href="#cb29-6"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler, OneHotEncoder</span>
+<span id="cb29-7"><a href="#cb29-7"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<span id="cb29-8"><a href="#cb29-8"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> classification_report</span>
+<span id="cb29-9"><a href="#cb29-9"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb29-10"><a href="#cb29-10"></a><span class="im">from</span> itertools <span class="im">import</span> product</span>
+<span id="cb29-11"><a href="#cb29-11"></a></span>
+<span id="cb29-12"><a href="#cb29-12"></a>df_income <span class="op">=</span> df.copy()</span>
+<span id="cb29-13"><a href="#cb29-13"></a></span>
+<span id="cb29-14"><a href="#cb29-14"></a>df_income[<span class="st">&quot;income&quot;</span>] <span class="op">=</span> df_income[<span class="st">&quot;income&quot;</span>].<span class="bu">map</span>({<span class="st">&#39; &lt;=50K&#39;</span>: <span class="dv">0</span>, <span class="st">&#39; &gt;50K&#39;</span>: <span class="dv">1</span>})</span>
+<span id="cb29-15"><a href="#cb29-15"></a></span>
+<span id="cb29-16"><a href="#cb29-16"></a><span class="co"># Re-Define X, y</span></span>
+<span id="cb29-17"><a href="#cb29-17"></a>X <span class="op">=</span> df_income.drop(columns<span class="op">=</span><span class="st">&quot;income&quot;</span>)   <span class="co"># assuming &#39;income&#39; is the target column</span></span>
+<span id="cb29-18"><a href="#cb29-18"></a>y <span class="op">=</span> df_income[<span class="st">&quot;income&quot;</span>]</span>
+<span id="cb29-19"><a href="#cb29-19"></a></span>
+<span id="cb29-20"><a href="#cb29-20"></a><span class="co"># Re-do train/test split</span></span>
+<span id="cb29-21"><a href="#cb29-21"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb29-22"><a href="#cb29-22"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>, stratify<span class="op">=</span>y</span>
+<span id="cb29-23"><a href="#cb29-23"></a>)</span>
+<span id="cb29-24"><a href="#cb29-24"></a></span>
+<span id="cb29-25"><a href="#cb29-25"></a>numeric_features <span class="op">=</span> [<span class="st">&#39;age&#39;</span>, <span class="st">&#39;fnlwgt&#39;</span>, <span class="st">&#39;education-num&#39;</span>, <span class="st">&#39;capital-gain&#39;</span>, <span class="st">&#39;capital-loss&#39;</span>, <span class="st">&#39;hours-per-week&#39;</span>]</span>
+<span id="cb29-26"><a href="#cb29-26"></a>categorical_features <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> X.columns <span class="cf">if</span> col <span class="kw">not</span> <span class="kw">in</span> numeric_features]</span>
+<span id="cb29-27"><a href="#cb29-27"></a></span>
+<span id="cb29-28"><a href="#cb29-28"></a>preprocessor <span class="op">=</span> ColumnTransformer(</span>
+<span id="cb29-29"><a href="#cb29-29"></a>    transformers<span class="op">=</span>[</span>
+<span id="cb29-30"><a href="#cb29-30"></a>        (<span class="st">&#39;num&#39;</span>, StandardScaler(), numeric_features),</span>
+<span id="cb29-31"><a href="#cb29-31"></a>        (<span class="st">&#39;cat&#39;</span>, OneHotEncoder(drop<span class="op">=</span><span class="st">&#39;first&#39;</span>, handle_unknown<span class="op">=</span><span class="st">&#39;ignore&#39;</span>), categorical_features)</span>
+<span id="cb29-32"><a href="#cb29-32"></a>    ]</span>
+<span id="cb29-33"><a href="#cb29-33"></a>)</span>
+<span id="cb29-34"><a href="#cb29-34"></a></span>
+<span id="cb29-35"><a href="#cb29-35"></a><span class="co"># Preprocess</span></span>
+<span id="cb29-36"><a href="#cb29-36"></a>X_train_prep <span class="op">=</span> preprocessor.fit_transform(X_train)</span>
+<span id="cb29-37"><a href="#cb29-37"></a>X_test_prep <span class="op">=</span> preprocessor.transform(X_test)</span>
+<span id="cb29-38"><a href="#cb29-38"></a></span>
+<span id="cb29-39"><a href="#cb29-39"></a><span class="co"># Convert sparse to dense</span></span>
+<span id="cb29-40"><a href="#cb29-40"></a>X_train_prep <span class="op">=</span> X_train_prep.toarray()</span>
+<span id="cb29-41"><a href="#cb29-41"></a>X_test_prep <span class="op">=</span> X_test_prep.toarray()</span>
+<span id="cb29-42"><a href="#cb29-42"></a></span>
+<span id="cb29-43"><a href="#cb29-43"></a><span class="co"># Input shape</span></span>
+<span id="cb29-44"><a href="#cb29-44"></a>input_shape <span class="op">=</span> X_train_prep.shape[<span class="dv">1</span>]</span>
+<span id="cb29-45"><a href="#cb29-45"></a></span>
+<span id="cb29-46"><a href="#cb29-46"></a><span class="co"># Build and Train function</span></span>
+<span id="cb29-47"><a href="#cb29-47"></a><span class="kw">def</span> build_and_train(model, model_name, optimizer<span class="op">=</span><span class="st">&#39;adam&#39;</span>, epochs<span class="op">=</span><span class="dv">30</span>, batch_size<span class="op">=</span><span class="dv">32</span>):</span>
+<span id="cb29-48"><a href="#cb29-48"></a>    model.<span class="bu">compile</span>(optimizer<span class="op">=</span>optimizer, loss<span class="op">=</span><span class="st">&#39;binary_crossentropy&#39;</span>, metrics<span class="op">=</span>[<span class="st">&#39;accuracy&#39;</span>])</span>
+<span id="cb29-49"><a href="#cb29-49"></a>    history <span class="op">=</span> model.fit(</span>
+<span id="cb29-50"><a href="#cb29-50"></a>        X_train_prep, y_train,</span>
+<span id="cb29-51"><a href="#cb29-51"></a>        epochs<span class="op">=</span>epochs,</span>
+<span id="cb29-52"><a href="#cb29-52"></a>        batch_size<span class="op">=</span>batch_size,</span>
+<span id="cb29-53"><a href="#cb29-53"></a>        validation_split<span class="op">=</span><span class="fl">0.2</span>,</span>
+<span id="cb29-54"><a href="#cb29-54"></a>        verbose<span class="op">=</span><span class="dv">0</span></span>
+<span id="cb29-55"><a href="#cb29-55"></a>    )</span>
+<span id="cb29-56"><a href="#cb29-56"></a>    y_pred_proba <span class="op">=</span> model.predict(X_test_prep).flatten()</span>
+<span id="cb29-57"><a href="#cb29-57"></a>    y_pred <span class="op">=</span> (y_pred_proba <span class="op">&gt;</span> <span class="fl">0.5</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb29-58"><a href="#cb29-58"></a>    <span class="bu">print</span>(<span class="ss">f&quot;</span><span class="sc">{</span>model_name<span class="sc">}</span><span class="ss"> | Epochs: </span><span class="sc">{</span>epochs<span class="sc">}</span><span class="ss"> | Batch Size: </span><span class="sc">{</span>batch_size<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb29-59"><a href="#cb29-59"></a>    <span class="bu">print</span>(classification_report(y_test.astype(<span class="bu">int</span>), y_pred))</span>
+<span id="cb29-60"><a href="#cb29-60"></a>    <span class="bu">print</span>(<span class="st">&quot;-&quot;</span> <span class="op">*</span> <span class="dv">40</span>)</span>
+<span id="cb29-61"><a href="#cb29-61"></a>    <span class="cf">return</span> history</span>
+<span id="cb29-62"><a href="#cb29-62"></a></span>
+<span id="cb29-63"><a href="#cb29-63"></a><span class="co"># (50,) architecture</span></span>
+<span id="cb29-64"><a href="#cb29-64"></a><span class="kw">def</span> simple_nn_classifier():</span>
+<span id="cb29-65"><a href="#cb29-65"></a>    model <span class="op">=</span> keras.Sequential([</span>
+<span id="cb29-66"><a href="#cb29-66"></a>        layers.Input(shape<span class="op">=</span>(input_shape,)),</span>
+<span id="cb29-67"><a href="#cb29-67"></a>        layers.Dense(<span class="dv">50</span>, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),</span>
+<span id="cb29-68"><a href="#cb29-68"></a>        layers.Dense(<span class="dv">1</span>, activation<span class="op">=</span><span class="st">&#39;sigmoid&#39;</span>)</span>
+<span id="cb29-69"><a href="#cb29-69"></a>    ])</span>
+<span id="cb29-70"><a href="#cb29-70"></a>    <span class="cf">return</span> model</span>
+<span id="cb29-71"><a href="#cb29-71"></a></span>
+<span id="cb29-72"><a href="#cb29-72"></a><span class="co"># Grid Search Function</span></span>
+<span id="cb29-73"><a href="#cb29-73"></a><span class="kw">def</span> grid_search_nn(model_architecture_fn, model_name, epochs_list, batch_sizes_list, learning_rates_list<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb29-74"><a href="#cb29-74"></a>    results <span class="op">=</span> []</span>
+<span id="cb29-75"><a href="#cb29-75"></a>    </span>
+<span id="cb29-76"><a href="#cb29-76"></a>    <span class="cf">if</span> learning_rates_list <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb29-77"><a href="#cb29-77"></a>        learning_rates_list <span class="op">=</span> [<span class="fl">0.001</span>]</span>
+<span id="cb29-78"><a href="#cb29-78"></a>    </span>
+<span id="cb29-79"><a href="#cb29-79"></a>    <span class="cf">for</span> epochs, batch_size, lr <span class="kw">in</span> product(epochs_list, batch_sizes_list, learning_rates_list):</span>
+<span id="cb29-80"><a href="#cb29-80"></a>        model <span class="op">=</span> model_architecture_fn()</span>
+<span id="cb29-81"><a href="#cb29-81"></a>        optimizer <span class="op">=</span> keras.optimizers.Adam(learning_rate<span class="op">=</span>lr)</span>
+<span id="cb29-82"><a href="#cb29-82"></a>        </span>
+<span id="cb29-83"><a href="#cb29-83"></a>        history <span class="op">=</span> build_and_train(</span>
+<span id="cb29-84"><a href="#cb29-84"></a>            model,</span>
+<span id="cb29-85"><a href="#cb29-85"></a>            model_name<span class="op">=</span><span class="ss">f&quot;</span><span class="sc">{</span>model_name<span class="sc">}</span><span class="ss"> (epochs=</span><span class="sc">{</span>epochs<span class="sc">}</span><span class="ss">, batch=</span><span class="sc">{</span>batch_size<span class="sc">}</span><span class="ss">, lr=</span><span class="sc">{</span>lr<span class="sc">}</span><span class="ss">)&quot;</span>,</span>
+<span id="cb29-86"><a href="#cb29-86"></a>            optimizer<span class="op">=</span>optimizer,</span>
+<span id="cb29-87"><a href="#cb29-87"></a>            epochs<span class="op">=</span>epochs,</span>
+<span id="cb29-88"><a href="#cb29-88"></a>            batch_size<span class="op">=</span>batch_size</span>
+<span id="cb29-89"><a href="#cb29-89"></a>        )</span>
+<span id="cb29-90"><a href="#cb29-90"></a>        </span>
+<span id="cb29-91"><a href="#cb29-91"></a>        final_acc <span class="op">=</span> history.history[<span class="st">&#39;val_accuracy&#39;</span>][<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb29-92"><a href="#cb29-92"></a>        </span>
+<span id="cb29-93"><a href="#cb29-93"></a>        results.append({</span>
+<span id="cb29-94"><a href="#cb29-94"></a>            <span class="st">&quot;Model&quot;</span>: model_name,</span>
+<span id="cb29-95"><a href="#cb29-95"></a>            <span class="st">&quot;Epochs&quot;</span>: epochs,</span>
+<span id="cb29-96"><a href="#cb29-96"></a>            <span class="st">&quot;Batch Size&quot;</span>: batch_size,</span>
+<span id="cb29-97"><a href="#cb29-97"></a>            <span class="st">&quot;Learning Rate&quot;</span>: lr,</span>
+<span id="cb29-98"><a href="#cb29-98"></a>            <span class="st">&quot;Validation Accuracy&quot;</span>: final_acc</span>
+<span id="cb29-99"><a href="#cb29-99"></a>        })</span>
+<span id="cb29-100"><a href="#cb29-100"></a>        </span>
+<span id="cb29-101"><a href="#cb29-101"></a>    <span class="cf">return</span> pd.DataFrame(results)</span>
+<span id="cb29-102"><a href="#cb29-102"></a></span>
+<span id="cb29-103"><a href="#cb29-103"></a>results_simple_nn <span class="op">=</span> grid_search_nn(</span>
+<span id="cb29-104"><a href="#cb29-104"></a>    model_architecture_fn<span class="op">=</span>simple_nn_classifier,</span>
+<span id="cb29-105"><a href="#cb29-105"></a>    model_name<span class="op">=</span><span class="st">&quot;Simple NN Classifier&quot;</span>,</span>
+<span id="cb29-106"><a href="#cb29-106"></a>    epochs_list<span class="op">=</span>[<span class="dv">20</span>, <span class="dv">30</span>],</span>
+<span id="cb29-107"><a href="#cb29-107"></a>    batch_sizes_list<span class="op">=</span>[<span class="dv">32</span>, <span class="dv">64</span>],</span>
+<span id="cb29-108"><a href="#cb29-108"></a>    learning_rates_list<span class="op">=</span>[<span class="fl">0.001</span>, <span class="fl">0.005</span>]</span>
+<span id="cb29-109"><a href="#cb29-109"></a>)</span>
+<span id="cb29-110"><a href="#cb29-110"></a></span>
+<span id="cb29-111"><a href="#cb29-111"></a>pd.set_option(<span class="st">&#39;display.max_columns&#39;</span>, <span class="va">None</span>)</span>
+<span id="cb29-112"><a href="#cb29-112"></a><span class="bu">print</span>(results_simple_nn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 532us/step
+Simple NN Classifier (epochs=20, batch=32, lr=0.001) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.91      4945
+           1       0.73      0.65      0.69      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.79      0.80      6513
+weighted avg       0.85      0.86      0.86      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 525us/step
+Simple NN Classifier (epochs=20, batch=32, lr=0.005) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.93      0.91      4945
+           1       0.74      0.61      0.67      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.81      0.77      0.79      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 557us/step
+Simple NN Classifier (epochs=20, batch=64, lr=0.001) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.91      4945
+           1       0.73      0.66      0.69      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.79      0.80      6513
+weighted avg       0.85      0.86      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 510us/step
+Simple NN Classifier (epochs=20, batch=64, lr=0.005) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.90      4945
+           1       0.71      0.65      0.68      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.78      0.79      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 488us/step
+Simple NN Classifier (epochs=30, batch=32, lr=0.001) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.91      4945
+           1       0.73      0.65      0.69      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.79      0.80      6513
+weighted avg       0.86      0.86      0.86      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 498us/step
+Simple NN Classifier (epochs=30, batch=32, lr=0.005) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.90      4945
+           1       0.72      0.63      0.67      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.78      0.79      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 513us/step
+Simple NN Classifier (epochs=30, batch=64, lr=0.001) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.91      4945
+           1       0.72      0.64      0.68      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.81      0.78      0.79      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 559us/step
+Simple NN Classifier (epochs=30, batch=64, lr=0.005) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.91      0.90      4945
+           1       0.70      0.64      0.67      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.78      0.79      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+                  Model  Epochs  Batch Size  Learning Rate  \
+0  Simple NN Classifier      20          32          0.001   
+1  Simple NN Classifier      20          32          0.005   
+2  Simple NN Classifier      20          64          0.001   
+3  Simple NN Classifier      20          64          0.005   
+4  Simple NN Classifier      30          32          0.001   
+5  Simple NN Classifier      30          32          0.005   
+6  Simple NN Classifier      30          64          0.001   
+7  Simple NN Classifier      30          64          0.005   
+
+   Validation Accuracy  
+0             0.849328  
+1             0.845298  
+2             0.852975  
+3             0.843954  
+4             0.847793  
+5             0.835701  
+6             0.849904  
+7             0.836276  </code></pre>
+</div>
+</div>
+<div id="d182ab9e10421228" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T04:01:59.942368Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T04:01:59.937048Z&quot;}" data-execution_count="231">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1"></a><span class="co"># (100,) architecture</span></span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="kw">def</span> keras_nn_100():</span>
+<span id="cb31-3"><a href="#cb31-3"></a>    model <span class="op">=</span> keras.Sequential([</span>
+<span id="cb31-4"><a href="#cb31-4"></a>        layers.Input(shape<span class="op">=</span>(input_shape,)),</span>
+<span id="cb31-5"><a href="#cb31-5"></a>        layers.Dense(<span class="dv">100</span>, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),</span>
+<span id="cb31-6"><a href="#cb31-6"></a>        layers.Dense(<span class="dv">1</span>, activation<span class="op">=</span><span class="st">&#39;sigmoid&#39;</span>)</span>
+<span id="cb31-7"><a href="#cb31-7"></a>    ])</span>
+<span id="cb31-8"><a href="#cb31-8"></a>    <span class="cf">return</span> model</span>
+<span id="cb31-9"><a href="#cb31-9"></a></span>
+<span id="cb31-10"><a href="#cb31-10"></a><span class="co"># (50, 50) architecture</span></span>
+<span id="cb31-11"><a href="#cb31-11"></a><span class="kw">def</span> keras_nn_50_50():</span>
+<span id="cb31-12"><a href="#cb31-12"></a>    model <span class="op">=</span> keras.Sequential([</span>
+<span id="cb31-13"><a href="#cb31-13"></a>        layers.Input(shape<span class="op">=</span>(input_shape,)),</span>
+<span id="cb31-14"><a href="#cb31-14"></a>        layers.Dense(<span class="dv">50</span>, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),</span>
+<span id="cb31-15"><a href="#cb31-15"></a>        layers.Dense(<span class="dv">50</span>, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),</span>
+<span id="cb31-16"><a href="#cb31-16"></a>        layers.Dense(<span class="dv">1</span>, activation<span class="op">=</span><span class="st">&#39;sigmoid&#39;</span>)</span>
+<span id="cb31-17"><a href="#cb31-17"></a>    ])</span>
+<span id="cb31-18"><a href="#cb31-18"></a>    <span class="cf">return</span> model</span>
+<span id="cb31-19"><a href="#cb31-19"></a></span>
+<span id="cb31-20"><a href="#cb31-20"></a><span class="co"># More Models</span></span>
+<span id="cb31-21"><a href="#cb31-21"></a></span>
+<span id="cb31-22"><a href="#cb31-22"></a><span class="co"># Very Simple (Single Layer Small)</span></span>
+<span id="cb31-23"><a href="#cb31-23"></a><span class="kw">def</span> keras_nn_25():</span>
+<span id="cb31-24"><a href="#cb31-24"></a>    model <span class="op">=</span> keras.Sequential([</span>
+<span id="cb31-25"><a href="#cb31-25"></a>        layers.Input(shape<span class="op">=</span>(input_shape,)),</span>
+<span id="cb31-26"><a href="#cb31-26"></a>        layers.Dense(<span class="dv">25</span>, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),</span>
+<span id="cb31-27"><a href="#cb31-27"></a>        layers.Dense(<span class="dv">1</span>, activation<span class="op">=</span><span class="st">&#39;sigmoid&#39;</span>)</span>
+<span id="cb31-28"><a href="#cb31-28"></a>    ])</span>
+<span id="cb31-29"><a href="#cb31-29"></a>    <span class="cf">return</span> model</span>
+<span id="cb31-30"><a href="#cb31-30"></a></span>
+<span id="cb31-31"><a href="#cb31-31"></a><span class="co"># Medium (Two Hidden Layers, Medium size)</span></span>
+<span id="cb31-32"><a href="#cb31-32"></a><span class="kw">def</span> keras_nn_100_50():</span>
+<span id="cb31-33"><a href="#cb31-33"></a>    model <span class="op">=</span> keras.Sequential([</span>
+<span id="cb31-34"><a href="#cb31-34"></a>        layers.Input(shape<span class="op">=</span>(input_shape,)),</span>
+<span id="cb31-35"><a href="#cb31-35"></a>        layers.Dense(<span class="dv">100</span>, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),</span>
+<span id="cb31-36"><a href="#cb31-36"></a>        layers.Dense(<span class="dv">50</span>, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),</span>
+<span id="cb31-37"><a href="#cb31-37"></a>        layers.Dense(<span class="dv">1</span>, activation<span class="op">=</span><span class="st">&#39;sigmoid&#39;</span>)</span>
+<span id="cb31-38"><a href="#cb31-38"></a>    ])</span>
+<span id="cb31-39"><a href="#cb31-39"></a>    <span class="cf">return</span> model</span>
+<span id="cb31-40"><a href="#cb31-40"></a></span>
+<span id="cb31-41"><a href="#cb31-41"></a><span class="co"># Deeper (Three Hidden Layers, Narrowing)</span></span>
+<span id="cb31-42"><a href="#cb31-42"></a><span class="kw">def</span> keras_nn_100_50_25():</span>
+<span id="cb31-43"><a href="#cb31-43"></a>    model <span class="op">=</span> keras.Sequential([</span>
+<span id="cb31-44"><a href="#cb31-44"></a>        layers.Input(shape<span class="op">=</span>(input_shape,)),</span>
+<span id="cb31-45"><a href="#cb31-45"></a>        layers.Dense(<span class="dv">100</span>, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),</span>
+<span id="cb31-46"><a href="#cb31-46"></a>        layers.Dense(<span class="dv">50</span>, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),</span>
+<span id="cb31-47"><a href="#cb31-47"></a>        layers.Dense(<span class="dv">25</span>, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),</span>
+<span id="cb31-48"><a href="#cb31-48"></a>        layers.Dense(<span class="dv">1</span>, activation<span class="op">=</span><span class="st">&#39;sigmoid&#39;</span>)</span>
+<span id="cb31-49"><a href="#cb31-49"></a>    ])</span>
+<span id="cb31-50"><a href="#cb31-50"></a>    <span class="cf">return</span> model</span>
+<span id="cb31-51"><a href="#cb31-51"></a></span>
+<span id="cb31-52"><a href="#cb31-52"></a><span class="co"># Wide Single Layer (wider than normal)</span></span>
+<span id="cb31-53"><a href="#cb31-53"></a><span class="kw">def</span> keras_nn_200():</span>
+<span id="cb31-54"><a href="#cb31-54"></a>    model <span class="op">=</span> keras.Sequential([</span>
+<span id="cb31-55"><a href="#cb31-55"></a>        layers.Input(shape<span class="op">=</span>(input_shape,)),</span>
+<span id="cb31-56"><a href="#cb31-56"></a>        layers.Dense(<span class="dv">200</span>, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),</span>
+<span id="cb31-57"><a href="#cb31-57"></a>        layers.Dense(<span class="dv">1</span>, activation<span class="op">=</span><span class="st">&#39;sigmoid&#39;</span>)</span>
+<span id="cb31-58"><a href="#cb31-58"></a>    ])</span>
+<span id="cb31-59"><a href="#cb31-59"></a>    <span class="cf">return</span> model</span>
+<span id="cb31-60"><a href="#cb31-60"></a></span>
+<span id="cb31-61"><a href="#cb31-61"></a><span class="co"># Deep Small Layers (more layers, smaller units)</span></span>
+<span id="cb31-62"><a href="#cb31-62"></a><span class="kw">def</span> keras_nn_64_32_16_8():</span>
+<span id="cb31-63"><a href="#cb31-63"></a>    model <span class="op">=</span> keras.Sequential([</span>
+<span id="cb31-64"><a href="#cb31-64"></a>        layers.Input(shape<span class="op">=</span>(input_shape,)),</span>
+<span id="cb31-65"><a href="#cb31-65"></a>        layers.Dense(<span class="dv">64</span>, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),</span>
+<span id="cb31-66"><a href="#cb31-66"></a>        layers.Dense(<span class="dv">32</span>, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),</span>
+<span id="cb31-67"><a href="#cb31-67"></a>        layers.Dense(<span class="dv">16</span>, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),</span>
+<span id="cb31-68"><a href="#cb31-68"></a>        layers.Dense(<span class="dv">8</span>, activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>),</span>
+<span id="cb31-69"><a href="#cb31-69"></a>        layers.Dense(<span class="dv">1</span>, activation<span class="op">=</span><span class="st">&#39;sigmoid&#39;</span>)</span>
+<span id="cb31-70"><a href="#cb31-70"></a>    ])</span>
+<span id="cb31-71"><a href="#cb31-71"></a>    <span class="cf">return</span> model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="b7cb1ae090d4fc07" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T04:02:00.046977Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T04:02:00.043978Z&quot;}" data-execution_count="232">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1"></a>model_functions <span class="op">=</span> {</span>
+<span id="cb32-2"><a href="#cb32-2"></a>    <span class="st">&quot;NN (100,)&quot;</span>: keras_nn_100,</span>
+<span id="cb32-3"><a href="#cb32-3"></a>    <span class="st">&quot;NN (50,50)&quot;</span>: keras_nn_50_50,</span>
+<span id="cb32-4"><a href="#cb32-4"></a>    <span class="st">&quot;NN (25,)&quot;</span>: keras_nn_25,</span>
+<span id="cb32-5"><a href="#cb32-5"></a>    <span class="st">&quot;NN (100,50)&quot;</span>: keras_nn_100_50,</span>
+<span id="cb32-6"><a href="#cb32-6"></a>    <span class="st">&quot;NN (100,50,25)&quot;</span>: keras_nn_100_50_25,</span>
+<span id="cb32-7"><a href="#cb32-7"></a>    <span class="st">&quot;NN (200,)&quot;</span>: keras_nn_200,</span>
+<span id="cb32-8"><a href="#cb32-8"></a>    <span class="st">&quot;NN (64,32,16,8)&quot;</span>: keras_nn_64_32_16_8</span>
+<span id="cb32-9"><a href="#cb32-9"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="3720855678bf9fe4" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T04:13:43.089450Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T04:02:00.148833Z&quot;}" data-execution_count="233">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1"></a><span class="co"># Create an empty list to collect results</span></span>
+<span id="cb33-2"><a href="#cb33-2"></a>all_results <span class="op">=</span> []</span>
+<span id="cb33-3"><a href="#cb33-3"></a></span>
+<span id="cb33-4"><a href="#cb33-4"></a><span class="co"># Run each model through grid search</span></span>
+<span id="cb33-5"><a href="#cb33-5"></a><span class="cf">for</span> model_name, model_fn <span class="kw">in</span> model_functions.items():</span>
+<span id="cb33-6"><a href="#cb33-6"></a>    results <span class="op">=</span> grid_search_nn(</span>
+<span id="cb33-7"><a href="#cb33-7"></a>        model_architecture_fn<span class="op">=</span>model_fn,</span>
+<span id="cb33-8"><a href="#cb33-8"></a>        model_name<span class="op">=</span>model_name,</span>
+<span id="cb33-9"><a href="#cb33-9"></a>        epochs_list<span class="op">=</span>[<span class="dv">20</span>, <span class="dv">30</span>],        </span>
+<span id="cb33-10"><a href="#cb33-10"></a>        batch_sizes_list<span class="op">=</span>[<span class="dv">32</span>, <span class="dv">64</span>],   </span>
+<span id="cb33-11"><a href="#cb33-11"></a>        learning_rates_list<span class="op">=</span>[<span class="fl">0.001</span>, <span class="fl">0.005</span>]</span>
+<span id="cb33-12"><a href="#cb33-12"></a>    )</span>
+<span id="cb33-13"><a href="#cb33-13"></a>    all_results.append(results)</span>
+<span id="cb33-14"><a href="#cb33-14"></a></span>
+<span id="cb33-15"><a href="#cb33-15"></a><span class="co"># Concatenate all results into one dataframe</span></span>
+<span id="cb33-16"><a href="#cb33-16"></a>final_results_df <span class="op">=</span> pd.concat(all_results, ignore_index<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 550us/step
+NN (100,) (epochs=20, batch=32, lr=0.001) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.89      0.93      0.91      4945
+           1       0.74      0.64      0.68      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.78      0.80      6513
+weighted avg       0.85      0.86      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 559us/step
+NN (100,) (epochs=20, batch=32, lr=0.005) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.93      0.90      4945
+           1       0.73      0.62      0.67      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.77      0.79      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 508us/step
+NN (100,) (epochs=20, batch=64, lr=0.001) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.91      4945
+           1       0.72      0.66      0.69      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.79      0.80      6513
+weighted avg       0.85      0.86      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 513us/step
+NN (100,) (epochs=20, batch=64, lr=0.005) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.90      4945
+           1       0.71      0.64      0.67      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.78      0.79      6513
+weighted avg       0.84      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 495us/step
+NN (100,) (epochs=30, batch=32, lr=0.001) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.90      4945
+           1       0.72      0.63      0.67      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.78      0.79      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 560us/step
+NN (100,) (epochs=30, batch=32, lr=0.005) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.89      0.91      0.90      4945
+           1       0.70      0.63      0.66      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.79      0.77      0.78      6513
+weighted avg       0.84      0.85      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 540us/step
+NN (100,) (epochs=30, batch=64, lr=0.001) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.90      0.92      0.91      4945
+           1       0.72      0.67      0.69      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.79      0.80      6513
+weighted avg       0.85      0.86      0.86      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 520us/step
+NN (100,) (epochs=30, batch=64, lr=0.005) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.90      0.90      4945
+           1       0.68      0.65      0.66      1568
+
+    accuracy                           0.84      6513
+   macro avg       0.79      0.78      0.78      6513
+weighted avg       0.84      0.84      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 564us/step
+NN (50,50) (epochs=20, batch=32, lr=0.001) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.89      0.93      0.91      4945
+           1       0.74      0.62      0.68      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.78      0.79      6513
+weighted avg       0.85      0.86      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 530us/step
+NN (50,50) (epochs=20, batch=32, lr=0.005) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.90      4945
+           1       0.71      0.64      0.67      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.78      0.79      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 523us/step
+NN (50,50) (epochs=20, batch=64, lr=0.001) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.91      4945
+           1       0.73      0.65      0.68      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.78      0.79      6513
+weighted avg       0.85      0.86      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 544us/step
+NN (50,50) (epochs=20, batch=64, lr=0.005) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.88      0.92      0.90      4945
+           1       0.72      0.61      0.66      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.77      0.78      6513
+weighted avg       0.84      0.85      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 539us/step
+NN (50,50) (epochs=30, batch=32, lr=0.001) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.94      0.91      4945
+           1       0.75      0.58      0.65      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.81      0.76      0.78      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 562us/step
+NN (50,50) (epochs=30, batch=32, lr=0.005) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.90      4945
+           1       0.70      0.63      0.66      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.79      0.77      0.78      6513
+weighted avg       0.84      0.85      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 549us/step
+NN (50,50) (epochs=30, batch=64, lr=0.001) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.91      4945
+           1       0.73      0.64      0.68      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.78      0.79      6513
+weighted avg       0.85      0.86      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 569us/step
+NN (50,50) (epochs=30, batch=64, lr=0.005) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.91      0.90      4945
+           1       0.68      0.63      0.66      1568
+
+    accuracy                           0.84      6513
+   macro avg       0.78      0.77      0.78      6513
+weighted avg       0.84      0.84      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 535us/step
+NN (25,) (epochs=20, batch=32, lr=0.001) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.91      4945
+           1       0.73      0.66      0.69      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.79      0.80      6513
+weighted avg       0.85      0.86      0.86      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 525us/step
+NN (25,) (epochs=20, batch=32, lr=0.005) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.89      0.93      0.91      4945
+           1       0.74      0.64      0.68      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.78      0.80      6513
+weighted avg       0.85      0.86      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 513us/step
+NN (25,) (epochs=20, batch=64, lr=0.001) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.91      4945
+           1       0.73      0.65      0.69      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.79      0.80      6513
+weighted avg       0.85      0.86      0.86      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 515us/step
+NN (25,) (epochs=20, batch=64, lr=0.005) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.90      0.91      0.90      4945
+           1       0.70      0.67      0.69      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.79      0.80      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 517us/step
+NN (25,) (epochs=30, batch=32, lr=0.001) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.91      4945
+           1       0.72      0.64      0.68      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.81      0.78      0.79      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 525us/step
+NN (25,) (epochs=30, batch=32, lr=0.005) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.89      0.93      0.91      4945
+           1       0.73      0.63      0.68      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.78      0.79      6513
+weighted avg       0.85      0.86      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 522us/step
+NN (25,) (epochs=30, batch=64, lr=0.001) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.91      4945
+           1       0.73      0.66      0.69      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.79      0.80      6513
+weighted avg       0.86      0.86      0.86      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 525us/step
+NN (25,) (epochs=30, batch=64, lr=0.005) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.91      4945
+           1       0.72      0.66      0.69      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.79      0.80      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 553us/step
+NN (100,50) (epochs=20, batch=32, lr=0.001) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.93      0.90      4945
+           1       0.72      0.60      0.66      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.77      0.78      6513
+weighted avg       0.84      0.85      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 584us/step
+NN (100,50) (epochs=20, batch=32, lr=0.005) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.91      0.90      4945
+           1       0.69      0.60      0.64      1568
+
+    accuracy                           0.84      6513
+   macro avg       0.78      0.76      0.77      6513
+weighted avg       0.83      0.84      0.83      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 545us/step
+NN (100,50) (epochs=20, batch=64, lr=0.001) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.90      4945
+           1       0.71      0.63      0.67      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.77      0.79      6513
+weighted avg       0.84      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 565us/step
+NN (100,50) (epochs=20, batch=64, lr=0.005) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.91      0.90      4945
+           1       0.69      0.65      0.67      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.79      0.78      0.78      6513
+weighted avg       0.84      0.85      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 567us/step
+NN (100,50) (epochs=30, batch=32, lr=0.001) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.87      0.93      0.90      4945
+           1       0.72      0.58      0.64      1568
+
+    accuracy                           0.84      6513
+   macro avg       0.80      0.75      0.77      6513
+weighted avg       0.84      0.84      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 557us/step
+NN (100,50) (epochs=30, batch=32, lr=0.005) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.92      0.90      4945
+           1       0.70      0.60      0.64      1568
+
+    accuracy                           0.84      6513
+   macro avg       0.79      0.76      0.77      6513
+weighted avg       0.83      0.84      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 553us/step
+NN (100,50) (epochs=30, batch=64, lr=0.001) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.88      0.91      0.90      4945
+           1       0.70      0.62      0.66      1568
+
+    accuracy                           0.84      6513
+   macro avg       0.79      0.77      0.78      6513
+weighted avg       0.84      0.84      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 568us/step
+NN (100,50) (epochs=30, batch=64, lr=0.005) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.88      0.90      0.89      4945
+           1       0.66      0.61      0.63      1568
+
+    accuracy                           0.83      6513
+   macro avg       0.77      0.75      0.76      6513
+weighted avg       0.83      0.83      0.83      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 580us/step
+NN (100,50,25) (epochs=20, batch=32, lr=0.001) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.91      0.90      4945
+           1       0.69      0.60      0.64      1568
+
+    accuracy                           0.84      6513
+   macro avg       0.78      0.76      0.77      6513
+weighted avg       0.83      0.84      0.83      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 594us/step
+NN (100,50,25) (epochs=20, batch=32, lr=0.005) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.92      0.90      4945
+           1       0.71      0.62      0.66      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.77      0.78      6513
+weighted avg       0.84      0.85      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 599us/step
+NN (100,50,25) (epochs=20, batch=64, lr=0.001) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.88      0.93      0.90      4945
+           1       0.73      0.60      0.65      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.76      0.78      6513
+weighted avg       0.84      0.85      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 574us/step
+NN (100,50,25) (epochs=20, batch=64, lr=0.005) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.88      0.92      0.90      4945
+           1       0.70      0.62      0.66      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.79      0.77      0.78      6513
+weighted avg       0.84      0.85      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 617us/step
+NN (100,50,25) (epochs=30, batch=32, lr=0.001) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.91      0.90      4945
+           1       0.69      0.60      0.64      1568
+
+    accuracy                           0.84      6513
+   macro avg       0.78      0.76      0.77      6513
+weighted avg       0.83      0.84      0.83      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 604us/step
+NN (100,50,25) (epochs=30, batch=32, lr=0.005) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.89      0.90      0.89      4945
+           1       0.66      0.64      0.65      1568
+
+    accuracy                           0.83      6513
+   macro avg       0.77      0.77      0.77      6513
+weighted avg       0.83      0.83      0.83      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 613us/step
+NN (100,50,25) (epochs=30, batch=64, lr=0.001) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.88      0.91      0.90      4945
+           1       0.69      0.60      0.64      1568
+
+    accuracy                           0.84      6513
+   macro avg       0.79      0.76      0.77      6513
+weighted avg       0.83      0.84      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 579us/step
+NN (100,50,25) (epochs=30, batch=64, lr=0.005) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.91      0.90      4945
+           1       0.69      0.63      0.66      1568
+
+    accuracy                           0.84      6513
+   macro avg       0.79      0.77      0.78      6513
+weighted avg       0.84      0.84      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 530us/step
+NN (200,) (epochs=20, batch=32, lr=0.001) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.91      4945
+           1       0.73      0.63      0.67      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.81      0.78      0.79      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 572us/step
+NN (200,) (epochs=20, batch=32, lr=0.005) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.92      0.90      4945
+           1       0.71      0.61      0.66      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.77      0.78      6513
+weighted avg       0.84      0.85      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 525us/step
+NN (200,) (epochs=20, batch=64, lr=0.001) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.90      0.92      0.91      4945
+           1       0.71      0.67      0.69      1568
+
+    accuracy                           0.86      6513
+   macro avg       0.81      0.79      0.80      6513
+weighted avg       0.85      0.86      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 574us/step
+NN (200,) (epochs=20, batch=64, lr=0.005) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.91      0.90      4945
+           1       0.70      0.64      0.67      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.79      0.78      0.78      6513
+weighted avg       0.84      0.85      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 545us/step
+NN (200,) (epochs=30, batch=32, lr=0.001) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.93      0.90      4945
+           1       0.73      0.62      0.67      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.81      0.77      0.79      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 552us/step
+NN (200,) (epochs=30, batch=32, lr=0.005) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.91      0.89      4945
+           1       0.68      0.62      0.65      1568
+
+    accuracy                           0.84      6513
+   macro avg       0.78      0.76      0.77      6513
+weighted avg       0.83      0.84      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 539us/step
+NN (200,) (epochs=30, batch=64, lr=0.001) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.90      0.91      0.90      4945
+           1       0.70      0.66      0.68      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.79      0.79      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 532us/step
+NN (200,) (epochs=30, batch=64, lr=0.005) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.90      0.89      4945
+           1       0.67      0.65      0.66      1568
+
+    accuracy                           0.84      6513
+   macro avg       0.78      0.77      0.78      6513
+weighted avg       0.84      0.84      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 602us/step
+NN (64,32,16,8) (epochs=20, batch=32, lr=0.001) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.93      0.90      4945
+           1       0.72      0.60      0.66      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.76      0.78      6513
+weighted avg       0.84      0.85      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 620us/step
+NN (64,32,16,8) (epochs=20, batch=32, lr=0.005) | Epochs: 20 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.93      0.91      4945
+           1       0.73      0.61      0.66      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.81      0.77      0.78      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 610us/step
+NN (64,32,16,8) (epochs=20, batch=64, lr=0.001) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.92      0.91      4945
+           1       0.72      0.65      0.68      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.78      0.79      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 597us/step
+NN (64,32,16,8) (epochs=20, batch=64, lr=0.005) | Epochs: 20 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.90      0.90      0.90      4945
+           1       0.69      0.68      0.69      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.79      0.79      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 643us/step
+NN (64,32,16,8) (epochs=30, batch=32, lr=0.001) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.92      0.90      4945
+           1       0.70      0.59      0.64      1568
+
+    accuracy                           0.84      6513
+   macro avg       0.79      0.76      0.77      6513
+weighted avg       0.83      0.84      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 633us/step
+NN (64,32,16,8) (epochs=30, batch=32, lr=0.005) | Epochs: 30 | Batch Size: 32
+              precision    recall  f1-score   support
+
+           0       0.88      0.93      0.90      4945
+           1       0.73      0.61      0.67      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.81      0.77      0.79      6513
+weighted avg       0.85      0.85      0.85      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 599us/step
+NN (64,32,16,8) (epochs=30, batch=64, lr=0.001) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.88      0.92      0.90      4945
+           1       0.71      0.62      0.66      1568
+
+    accuracy                           0.85      6513
+   macro avg       0.80      0.77      0.78      6513
+weighted avg       0.84      0.85      0.84      6513
+
+----------------------------------------
+204/204 ━━━━━━━━━━━━━━━━━━━━ 0s 618us/step
+NN (64,32,16,8) (epochs=30, batch=64, lr=0.005) | Epochs: 30 | Batch Size: 64
+              precision    recall  f1-score   support
+
+           0       0.89      0.91      0.90      4945
+           1       0.69      0.64      0.66      1568
+
+    accuracy                           0.84      6513
+   macro avg       0.79      0.77      0.78      6513
+weighted avg       0.84      0.84      0.84      6513
+
+----------------------------------------</code></pre>
+</div>
+</div>
+</section>
+<section id="best-keras-nn-overall" class="level4">
+<h4 class="anchored" data-anchor-id="best-keras-nn-overall">Best Keras NN Overall</h4>
+<div id="aac9d734539c8b48" class="cell" data-executetime="{&quot;end_time&quot;:&quot;2025-04-29T04:13:43.201811Z&quot;,&quot;start_time&quot;:&quot;2025-04-29T04:13:43.192919Z&quot;}" data-execution_count="234">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1"></a><span class="co"># Sort by highest Validation Accuracy</span></span>
+<span id="cb35-2"><a href="#cb35-2"></a>best_models <span class="op">=</span> final_results_df.sort_values(by<span class="op">=</span><span class="st">&quot;Validation Accuracy&quot;</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb35-3"><a href="#cb35-3"></a></span>
+<span id="cb35-4"><a href="#cb35-4"></a>best_models.head(<span class="dv">10</span>)  <span class="co"># Show top 10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="234">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Model</th>
+<th data-quarto-table-cell-role="th">Epochs</th>
+<th data-quarto-table-cell-role="th">Batch Size</th>
+<th data-quarto-table-cell-role="th">Learning Rate</th>
+<th data-quarto-table-cell-role="th">Validation Accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>NN (25,)</td>
+<td>20</td>
+<td>64</td>
+<td>0.001</td>
+<td>0.853743</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16</td>
+<td>NN (25,)</td>
+<td>20</td>
+<td>32</td>
+<td>0.001</td>
+<td>0.853551</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>NN (25,)</td>
+<td>30</td>
+<td>64</td>
+<td>0.001</td>
+<td>0.852207</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>NN (100,)</td>
+<td>20</td>
+<td>64</td>
+<td>0.001</td>
+<td>0.849904</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">19</td>
+<td>NN (25,)</td>
+<td>20</td>
+<td>64</td>
+<td>0.005</td>
+<td>0.848944</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">42</td>
+<td>NN (200,)</td>
+<td>20</td>
+<td>64</td>
+<td>0.001</td>
+<td>0.848944</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>NN (25,)</td>
+<td>30</td>
+<td>32</td>
+<td>0.001</td>
+<td>0.848177</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>NN (25,)</td>
+<td>20</td>
+<td>32</td>
+<td>0.005</td>
+<td>0.846065</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>NN (100,)</td>
+<td>20</td>
+<td>32</td>
+<td>0.001</td>
+<td>0.845489</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">6</td>
+<td>NN (100,)</td>
+<td>30</td>
+<td>64</td>
+<td>0.001</td>
+<td>0.845106</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>From the results, we observe that the simpler neural network architectures, particularly the NN (25,) models, consistently achieved the highest validation accuracies across different hyperparameter settings. Smaller networks with one hidden layer of 25 neurons, combined with a batch size of 32 or 64 and a lower learning rate of 0.001, performed best. In contrast, deeper architectures like NN (50,50) and wider models like NN (100,) showed slightly lower but still competitive performance. Overall, these results suggest that for the income classification task, compact models with modest capacity generalize better than deeper or overly complex networks.</p>
+</section>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>In this lab, we tackled the challenge of predicting whether someone earns more than $50,000 a year based on personal and work-related characteristics. We tried several machine learning models and found that ensemble tree models like Bagging and Random Forest performed very well, achieving around 85–86% accuracy on unseen data. These models were especially good at identifying important features like age, education level, marital status, hours worked per week, and income from capital gains. On the other hand, Naive Bayes, while simple and fast, struggled because it assumes all features are independent, which isn’t true for real-world people data; age, education, and occupation are often connected. As a result, Naive Bayes achieved much lower accuracy and produced a lot of false positives, reinforcing that model selection must consider the data’s complexity.</p>
+<p>When we shifted to neural networks, we explored how different network designs, or architectures, impacted prediction quality. Interestingly, the simpler neural networks consistently outperformed the more complex ones. Networks with just a single hidden layer of 25 neurons (NN (25,)) achieved the highest validation accuracy across different settings. In contrast, models with more layers (like NN (50,50) or NN (100,50,25)) or very wide layers (like NN (200,)) did not consistently improve performance and sometimes made it worse. This tells us that bigger networks are not automatically better; adding more layers and neurons can make the model “overfit” to the training data, meaning it learns noise instead of meaningful patterns. For this structured dataset, where relationships are strong but not extremely complicated, smaller, focused networks were more effective at generalizing to new individuals.</p>
+<p>Another key takeaway was how sensitive neural networks are to hyperparameters like learning rate, batch size, and number of training cycles (epochs). Even small adjustments here made a noticeable difference. Models trained with a lower learning rate (0.001) generally achieved higher validation accuracy, while those trained with a higher rate (0.005) sometimes learned too fast and became less accurate. Likewise, a batch size of 32 often worked slightly better than 64. These findings emphasize that training a neural network is not just about picking a design, but also about carefully tuning how the learning process happens. Through this tuning, we found combinations that made the simple NN (25,) model remarkably strong for this task, reaching about 85–86% accuracy while remaining lightweight and efficient.</p>
 </section>
 
 </main>
